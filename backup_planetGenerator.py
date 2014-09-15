@@ -1,13 +1,7 @@
 import numpy as np
 import mercury
 import orbital as orb
-
-import os
 import sys
-import subprocess
-import pickle
-import time
-
 import numpy.random as random
 import matplotlib.pyplot as plt
 import itertools
@@ -64,8 +58,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
                  min_ecc = 0, max_ecc = 0, min_inc = 0, max_inc = 0,
                  mass_bin = 1.0, u_bin = 0.5, a_bin = 1.0, e_bin = 1.0,
                  argw_bin = 0.0, node_bin = 0.0, mean_anom_bin = 1.0, i_bin = 0,
-                 plot_orbits = 0, plot_barycentric = 0,
-                 integration_dir = None):
+                 plot_orbits = 0, plot_barycentric = 0):
     """
     Explain parameters here
     
@@ -270,17 +263,9 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     """ (3) Above: Set Up Arrays (Planets) """
     
-    
+    integration_dir = "simtest"
 
     """ (4) Write Mercury Files """
-    
-    if integration_dir is None:
-       u_bin_str = int(round(u_bin * 10, 0))
-       e_bin_str = int(round(e_bin * 10, 0))
-       i_bin_str = int(round(i_bin, 0))
-       M_bin_str = int(round(mean_anom_bin, 0))
-       integration_dir = "simtest_u%d_e%d_i%03d_M%03d" % (u_bin_str, e_bin_str, i_bin_str, M_bin_str)
-   
 
     mercury.write_mercury_files(x_b, y_b, z_b, vx_b, vy_b, vz_b, mass_b,
     							np.zeros(2),np.zeros(2),np.zeros(2),
@@ -312,13 +297,16 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     							body_type = 'small', coord_type = 'cart')
 
     """ (4) Write Mercury Files """
-    
-    
+
     """ (5) Plot Orbits (Optional) """
 
+    # Options
+    #plot_orbits = 0
+    #plot_barycentric = 0
+
+    print "before plot"
 
     if plot_orbits:
-        print "before plot"
     	if plot_barycentric:
     		plt.plot([0]+X0,[0]+Y0,'bo',mew=0,ms=7.0)
     		plt.plot(x_b+X0,y_b+Y0,'bo',mew=0,ms=7.0)
@@ -380,52 +368,6 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     		plt.show()
 
     """ (5) Plot Orbits (Optional) """
-    
-def execute_mercury(directory, hold = True):
-    """ 
-	executes the mercury script in a specified directory
-    corresponding to an integration
-    
-    hold: whether to return to initial directory
-    
-    if hold == True:
-       Requires the directory is one level below
-    """
-    #mercury = directory + "/m.exe" # mercury executable
-    mercury = "./m.exe" # mercury executable
-    os.chdir(directory)
-    subprocess.call(mercury) 
-    
-    # Return to start directory
-    if hold:
-       os.chdir("../")
-       
-def getEjectionData(directory, hold = True):
-    """ 
-	executes the mercury script in a specified directory
-    corresponding to an integration
-    
-    hold: whether to return to initial directory
-    
-    if hold == True:
-       Requires the directory is one level below
-    """
-    
-    # Name Output based on directory extension name
-    
-    u = directory.find("_")
-    
-    #eject_name = "eject%s.t" % directory[u:]
-    
-    ejectionData = ["python", "getEjectionData.py"]
-    #ejectionData = ["python", "getEjectionData.py", eject_name]
-    os.chdir(directory)
-    subprocess.call(ejectionData) 
-    
-    # Return to start directory
-    if hold:
-       os.chdir("../")
-    
 	
 def new_option_parser():
   """ parameters for simulation of 1 to N independent planets around two binary stars """
@@ -495,10 +437,10 @@ def new_option_parser():
                     dest="i_bin", type="float", default = 0.0,
                     help="inclination of the binary stars in deg [%default]")
   result.add_option("--plot_orb",
-                    dest="plot_orb", type="int", default = 0,
+                    dest="plot_orb", type="int", default = 1,
                     help="plot orbits (0 or 1) [%default]")
   result.add_option("--plot_bary",
-                    dest="plot_bary", type="int", default = 0,
+                    dest="plot_bary", type="int", default = 1,
                     help="plot barycentric orbits (0 or 1) (not totally sure what this does) [%default]")
                     
   return result
@@ -507,14 +449,7 @@ def new_option_parser():
 def execute_main(o, arguments):
    """ main method for command line call or pseudo_main call """
    
-   u_bin_str = int(round(o.u_bin * 10, 0))
-   e_bin_str = int(round(o.e_bin * 10, 0))
-   i_bin_str = int(round(o.i_bin, 0))
-   M_bin_str = int(round(o.mean_anom_bin, 0))
-   integration_dir = "simtest_u%d_e%d_i%03d_M%03d" % (u_bin_str, e_bin_str, i_bin_str, M_bin_str)
-   
-   print "Grid Planets"
-   time_a = time.time()
+   print "Executing"
    grid_planets(num_M = o.num_M, num_a = o.num_a, num_i = o.num_i, num_e = o.num_e,
                 min_M = o.min_M, max_M = o.max_M, min_sma = o.min_sma, max_sma = o.max_sma,
                 min_ecc = o.min_ecc, max_ecc = o.max_ecc, 
@@ -524,33 +459,9 @@ def execute_main(o, arguments):
                 mean_anom_bin = o.mean_anom_bin, i_bin = o.i_bin,
                 plot_orbits = o.plot_orb, plot_barycentric = o.plot_bary)
                 
-   print "Done Gridding Planets"
-   time_b = time.time()
-   print "Time: %.4f" % (time_b - time_a)
-   print
-   
-   print "Saving Parameters to Pickle File"
-   # Write 'o' dictionary into file (using Pickle)
-   pickle_f = open(integration_dir + "/info.p", "wb")
-   pickle.dump(o, pickle_f)
-   pickle_f.close()
-   print "Done Saving Parameters to Pickle File"
-   
-   print "Running Mercury"
-   time_a = time.time()
-   execute_mercury(integration_dir)
-   print "Done Running Mercury"
-   time_b = time.time()   
-   print "Time: %.4f" % (time_b - time_a)
-   
-   print "Getting Ejection Data"
-   time_a = time.time()
-   getEjectionData(integration_dir)
-   print "Done Getting Ejection Data"
-   time_b = time.time()   
-   print "Time: %.4f" % (time_b - time_a)
+   print "Done"
 
-def pseudo_main(args):
+def psuedo_main(args):
    """ option parser input not from the command line """
    o, arguments  = new_option_parser().parse_args(args)
    execute_main(o, arguments)
