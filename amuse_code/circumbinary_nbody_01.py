@@ -91,17 +91,29 @@ def initialize_circumbinary_system(star_elements, planet_elements, star_masses):
   pe_true_anom = orbit.true_anomaly_from_mean_anomaly(pe.M, pe.e)
                         
   binary_mass = star_masses[0] + star_masses[1] # Is this incorrect??????
+  
   planet = orbit.planet_from_orbital_elements(binary_mass,
-                    pe.a, pe.e, pe_true_anom, pe.i, pe.node, pe.argw)
+                       pe.a, pe.e, pe_true_anom, pe.i, pe.node, pe.argw)
+                       
+  system = Particles(0)
+  system.add_particle(stars[0])
+  system.add_particle(stars[1])
+  system.add_particle(planet)
                         
-  return stars, planet
+  return system
     
-def integrate_circumbinary_system(stars, planet, t_end, n_steps,
+def integrate_circumbinary_system(system, t_end, n_steps,
                          snap_dir, file_out, file_redir, huayno_eta):
   """
   integrate circumbinary system
   """
-  bodies = ParticlesSuperset([stars, planetesimals])
+  #print "Stars"
+  #print stars
+  #print "planet"
+  #print planet
+  
+  #bodies = ParticlesSuperset([stars, planet])
+  bodies = system
   converter = nbody_system.nbody_to_si(1|units.MSun,1|units.AU)
   
   # Initialize Code
@@ -125,7 +137,7 @@ def evolve_circumbinary_system(bodies, gravity,
   """
   Evolve bodies (two stars and one circum-binary planet) using 'gravity' code
   """
-  #bodies = ParticlesSuperset([stars, planets])
+  #bodies = ParticlesSuperset([stars, planet])
   
   channel_from_gr_to_framework = gravity.particles.new_channel_to(bodies)
   
@@ -142,7 +154,7 @@ def evolve_circumbinary_system(bodies, gravity,
   f = open(snap_dir + "/" + stdout, 'a')
   
   print " ** evolving: t_end = ", t_end, ", dt = ", dt.in_(units.yr)
-  print " \t\t", "time", "\t\t", "dE"
+  print " \t", "time", "\t\t\t", "E" "\t\t\t", "dE"
   while time<=t_end:
     gravity.evolve_model(time)
     channel_from_gr_to_framework.copy()
@@ -179,6 +191,6 @@ def evolve_circumbinary_system(bodies, gravity,
   
   return
   
-if __name__ in ('__main__', '__plot__'):
-  o, arguments  = new_option_parser().parse_args()
+#if __name__ in ('__main__', '__plot__'):
+#  o, arguments  = new_option_parser().parse_args()
   

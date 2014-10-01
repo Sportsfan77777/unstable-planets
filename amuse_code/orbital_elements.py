@@ -9,8 +9,8 @@ class Orb_Kepler:
        self.e = e  # eccentricity
        self.i = i  # inclination
        self.M = M  # mean anomaly
-       self.argw = self.argw  # argument of pericenter
-       self.node = self.node  # longitude of the ascending node
+       self.argw = argw  # argument of pericenter
+       self.node = node  # longitude of the ascending node
     
 class Orb_Cartesian:
     """ 

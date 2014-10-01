@@ -32,7 +32,7 @@ def orbital_parameters(rel_position, rel_velocity, total_mass):
     
     return semimajor_axis, eccentricity, period
     
-def true_anomaly_from_mean_anomaly(M,e)
+def true_anomaly_from_mean_anomaly(M,e):
     """ 
     converts the mean anomaly M to the true anomaly f 
     via the intermediate eccentric anomaly E that is calculated from eccentricity e
@@ -44,11 +44,16 @@ def true_anomaly_from_mean_anomaly(M,e)
     def dk(E,e,M):
 	   """Derivative of Kepler's Equation: solve for E"""
 	   return 1 - e*math.cos(E)
-	   
-	guess = 3.0  # can be anything really (as far as I know)
-	E = newton(k, guess, fprime = dk, args = (e,M))
 	
-    return true_from_ecc(E, e)
+    guess = 3.0  # can be anything really (as far as I know)
+    (E, flag) = newton(k, guess, fprime = dk, args = (e,M))
+    
+    print "Mean Anomaly:", M
+    print "Eccentric Anomaly:", E, "(Flag:)", flag
+	
+    f = true_from_ecc(E, e)
+    print "True Anomaly:", f
+    return f
     
     
 def kepler_orbital_elements_from_binary(two_bodies, angle = True):
@@ -74,7 +79,8 @@ def kepler_binary_from_orbital_elements(m1, m2, sma,
     from given orbital elements
     """
     return new_binary_from_orbital_elements(m1, m2, sma, 
-                        ecc, true_anom, inc, long_asc_node, arg_peri)
+                        ecc, true_anom, inc, long_asc_node, arg_peri,
+                        G = constants.G)
                         
 def planet_from_orbital_elements(mass, sma, ecc, true_anom, inc, long_asc_node, arg_peri):
     """
@@ -89,7 +95,9 @@ def planet_from_orbital_elements(mass, sma, ecc, true_anom, inc, long_asc_node, 
     two_bodies.position -= two_bodies[0].position
     two_bodies.velocity -= two_bodies[0].velocity
     
-    planet = two_bodies[1]
+    planet = Particles(0)
+    planet.add_particle(two_bodies[1])
+    
     
     return planet
 
