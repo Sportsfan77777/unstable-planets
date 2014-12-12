@@ -18,26 +18,26 @@ class ID_Manager():
 
         self.add_many(ids, names)
 
-    def _check_exception(ids, names):
+    def _check_exception(self, ids, names):
         if len(ids) != len(names):
             raise Exception("The number of names must equal the number of IDs")
 
-    def add(id_i, name):
+    def add(self, id_i, name):
         str_id = str(id_i)
 
-        self._id_dict[name] = id_i
-        self._name_dict[str_id] = name
+        self._id_dict[str_id] = name
+        self._name_dict[name] = id_i
 
-    def add_many(ids = [], names = []):
+    def add_many(self, ids = [], names = []):
         self._check_exception(ids, names)
 
         for id_i, name in zip(ids, names):
             self.add(id_i, name)
 
-    def get_id(name):
-        return self._id_dict[name]
+    def get_id(self, name):
+        return self._name_dict[name]
 
-    def get_name(id_i):
+    def get_name(self, id_i):
         str_id = str(id_i)
         return self._id_dict[str_id]
 
@@ -56,7 +56,7 @@ class ID_Manager():
         self._name_dict = pickle.load(f_names)
 
 
-    def save(name = None):
+    def save(self, name = None):
         if name:
             fn_ids = "ids_%s.p" % name
             fn_names = "names_%s.p" % name
