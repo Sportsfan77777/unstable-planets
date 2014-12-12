@@ -10,3 +10,6 @@ Useful functions that will be useful in plotting and in general
 
 import numpy as np
 
+
+
+""" Save initial conditions of planets in pickle files! (not here...) """

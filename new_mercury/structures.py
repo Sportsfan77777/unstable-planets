@@ -11,10 +11,11 @@ class Vector():
         self._size = len(args)
         self._dict = {}
 
-    def pretty_print():
+    def pretty_print(self, pretty = True):
         print self._vector
-        if len(self._dict):
-            print ,
+        if len(self._dict) and pretty:
+            for key in sorted(self._dict):
+                print "| %s = %s |" % (key, str(self._dict[key])),
         print
 
     def set(self, entry, arg_num = -1):
@@ -49,6 +50,7 @@ class Position(Vector):
 
     def __init__(self, *args):
         if len(args) == 3:
+            (x,y,z) = args
             Vector.__init__(self, x, y, z)
             self.name_arg('x', 0)
             self.name_arg('y', 1)
@@ -72,6 +74,7 @@ class Velocity(Vector):
 
     def __init__(self, *args):
         if len(args) == 3:
+            (vx,vy,vz) = args
             Vector.__init__(self, vx, vy, vz)
             self.name_arg('vx', 0)
             self.name_arg('vy', 1)
@@ -92,9 +95,11 @@ class Velocity(Vector):
         self.name_arg('vz', 2)
 
 class AngularMomentum(Vector):
-    """docstring for AngularMomentum"""
-    def __init__(self, *arg):
+    """ specific angular momentum """
+
+    def __init__(self, *args):
         if len(args) == 3:
+            (hx, hy, hz) = args
             Vector.__init__(self, hx, hy, hz)
             self.name_arg('hx', 0)
             self.name_arg('hy', 1)
@@ -113,5 +118,7 @@ class AngularMomentum(Vector):
     def set_hz(self, hz):
         self.set(hz, arg_num = 2)
         self.name_arg('hz', 2)
+
+
         
 

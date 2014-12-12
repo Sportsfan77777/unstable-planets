@@ -39,10 +39,13 @@ class Plotter():
 		pass
 
 	def plot_ecc(planets = []):
+		""" plot ecc of planets over time """
 		pass
 
 	def plot_inc(planets = []):
+		""" plot inc of planets over time """
 		pass
 
 	def plot_xy(planets = []):
+		""" plot xy snapshots of planets over time """
 		pass
