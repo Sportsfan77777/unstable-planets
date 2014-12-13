@@ -15,6 +15,8 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from optparse import OptionParser
 
+from structures import *
+
 """
 This program places planets on orbits around a binary star system.
 There are 1 to 5 sensible inputs.
@@ -274,7 +276,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     """ (4) Write Pickle Files """
 
-    
+
 
     """ (4) Write Pickle Files """ 
 
