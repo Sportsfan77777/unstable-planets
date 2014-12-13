@@ -271,10 +271,14 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     a_p = peri_p / (1 - ecc_p) # semi-major axis
 
     """ (3) Above: Set Up Arrays (Planets) """
-    
+
+    """ (4) Write Pickle Files """
+
     
 
-    """ (4) Write Mercury Files """
+    """ (4) Write Pickle Files """ 
+
+    """ (5) Write Mercury Files """
     
     if integration_dir is None:
        u_bin_str = int(round(u_bin * 10, 0))
@@ -313,7 +317,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     							planet_names, 'small.in', directory = integration_dir, \
     							body_type = 'small', coord_type = 'cart')
 
-    """ (4) Write Mercury Files """
+    """ (5) Write Mercury Files """
     
     
     """ (5) Plot Orbits (Optional) """

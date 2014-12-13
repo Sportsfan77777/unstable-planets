@@ -67,6 +67,6 @@ class ID_Manager():
         f_ids = open(fn_ids, "wb")
         f_names = open(fn_names, "wb")
 
-        pickle.dump(f_ids, self._id_dict)
-        pickle.dump(f_names, self._name_dict)
+        pickle.dump(self._id_dict, f_ids)
+        pickle.dump(self._name_dict, f_names)
 
