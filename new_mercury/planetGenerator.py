@@ -1,8 +1,6 @@
-"""
-Note to self: Doc this
-"""
-
 import numpy as np
+import mercury
+import orbital as orb
 
 import os
 import sys
@@ -17,11 +15,36 @@ from mpl_toolkits.mplot3d import Axes3D
 
 from optparse import OptionParser
 
-import mercury
-import orbital as orb
+"""
+This program places planets on orbits around a binary star system.
+There are 1 to 5 sensible inputs.
+The inputs are not necessary. There are default values in the code.
 
-from structures import *
+(1)
+This program takes an input integer 'N' and produces N evenly spaced orbits
+around a binary star system (e.g. M = 0, 2pi/N, 2*2pi/N, ..., (N-1)*2pi/N)
+at each given semi-major axis, each given eccentricity, AND each given inclination. 
 
+(2)
+This program takes an input integer 'periapse'
+Periapse = 0; Apoapse = 1
+
+(3)
+This program takes an input integer 'num_a' and produces num_a evenly spaced 'a'
+around a binary star system. For each 'a', 'N' * 'num_e' * 'num_i' planets are produced
+(e.g. a = a_min, a_min + step_size, ..., a_max = a_min + (N-1)*step_size)
+
+(4)
+This program takes an input integer 'num_i' and produces num_e evenly spaced 'e'
+around a binary star system. For each 'i', 'N' * 'num_a' * 'num_e' planets are produced
+(e.g. i = i_min, i_min + step_size, ..., i_max = i_min + (N-1)*step_size)
+
+(5)
+This program takes an input integer 'num_e' and produces num_e evenly spaced 'e'
+around a binary star system. For each 'e', 'N' * 'num_a' * 'num_i' planets are produced
+(e.g. e = e_min, e_min + step_size, ..., e_max = e_min + (N-1)*step_size)
+
+"""
 
 """ CONSTANTS AND UNITS """
 G = mercury.G
@@ -248,14 +271,10 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     a_p = peri_p / (1 - ecc_p) # semi-major axis
 
     """ (3) Above: Set Up Arrays (Planets) """
+    
+    
 
-    """ (4) Write Pickle Files """
-
-
-
-    """ (4) Write Pickle Files """ 
-
-    """ (5) Write Mercury Files """
+    """ (4) Write Mercury Files """
     
     if integration_dir is None:
        u_bin_str = int(round(u_bin * 10, 0))
@@ -294,7 +313,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     							planet_names, 'small.in', directory = integration_dir, \
     							body_type = 'small', coord_type = 'cart')
 
-    """ (5) Write Mercury Files """
+    """ (4) Write Mercury Files """
     
     
     """ (5) Plot Orbits (Optional) """

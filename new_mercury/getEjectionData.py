@@ -37,6 +37,10 @@ a_max = o.max_sma
 
 """ Read IDs from ids.p file (ids map to the old format of M#a_S_ """
 
+pickle_fn = "ids.p"
+pickle_f = open(pickle_fn, "rb")
+id_dict = pickle.load(pickle_f)
+pickle_f.close()
 
 """ Read from into.out file (output data from m.exe = mercury) """
 
@@ -79,9 +83,9 @@ if num_a > 1:
 	step_size = a_range / (num_a - 1) 
 	for i in xrange(num_a):
 		semi_major_axes[i] += (i * step_size)
-		semi_major_axes[i] = round(semi_major_axes[i], 1) # This is specific for a = %.1f
+		semi_major_axes[i] = round(semi_major_axes[i], 2) # This is specific for a = %.2f  <<--- Note the change from x.x to x.xx!!
 		
-sm_array = [int(10 * x) for x in semi_major_axes]
+sm_array = [int(100.0 * x) for x in semi_major_axes]  # Note the change from x.x to x.xx!!!!!!
 #print sm_array # S Names
 
 ejectionTable = np.zeros((num_a, N)) + 99.9
@@ -90,16 +94,17 @@ ejectionTable = np.zeros((num_a, N)) + 99.9
 
 for line in data:
 	split_str = line.split('_')
-	ID_label = split_str[0] # This is 'ID' <<<---- Assert this?
+	#ID_label = split_str[0] # This is 'ID' <<<---- Assert this?
 	
 	nxt_str = split_str[1]
 	nxt_split = nxt_str.split(' ')
 	
 	ID_str = nxt_split[0] # This is the ID number
+	ID_name = id_dict(ID_str)
+	id_split = ID_name.split('_')
 
-	M_str =
-	S_str = 
-
+	M_str = id_split[0]
+	S_str = id_split[1]
 
 	Eject_val = int(float(nxt_split[-2])) / 1000.0 # This is #c (in kyr)
 	Eject = round(Eject_val, 1)
@@ -110,7 +115,7 @@ for line in data:
 	Si = sm_array.index(int(S_str[1:]))
 	
 	#print Mi, Si
-	ejectionTable[Si][Mi] = Eject
+	ejectionTable[Si][Mi] = Eject  ### <<<<------ Save this table somehow (as dictionary?)
 	
 	# parse into M and a (directly or indirectly?)
 
