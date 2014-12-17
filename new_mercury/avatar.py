@@ -3,6 +3,7 @@ masters (calculates) all 4 (really 6) elements
 """
 
 import numpy as np
+import kepler
 from structures import *
 
 def calculate_a(position, velocity, mu):
@@ -119,6 +120,8 @@ def calculate_mean_anom():
 ####### SUPPLEMENTAL #######
 
 def calculate_true_anom(elements, position, velocity, angular_momentum, positive = False):
+    h = angular_momentum
+
     r_dot_v = position.dot(velocity)
     if (r_dot_v > 0 ):
         negate = 1
@@ -134,4 +137,22 @@ def calculate_true_anom(elements, position, velocity, angular_momentum, positive
         true_anom += 2.0 * np.pi
 
     return true_anom
+
+####### Kepler's Equation ########
+
+def calculate_geometric_anomaly(elements):
+    """
+    Requires elements: 'e', 'M'
+    if 'e' < 1, calculate eccentric anomaly
+    if 'e' = 1, 
+    if 'e' > 1, calculate Hyperbolic anomaly
+    """
+
+    if elements.get('ecc') < 1:
+        kepler.calculate_eccentric_anomaly(elements)
+    elif elements.get('ecc') == 1:
+        kepler.calculate_parabolic_anomaly(elements)
+    elif elements.get('ecc') > 1:
+        kepler.calculate_hyperbolic_anomaly(elements)
+
 

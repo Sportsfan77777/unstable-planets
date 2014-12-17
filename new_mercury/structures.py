@@ -37,6 +37,8 @@ class Vector():
             self._vector = new_vector
             self._size = len(self._vector)
 
+        # Check if arg_num is a named_arg
+
         self._vector[arg_num] = entry
 
     def get(self, name_or_num):
@@ -46,7 +48,7 @@ class Vector():
             return self._vector[num]
         else:
             name = name_or_num
-            return self._dict[name] # maybe handle exception also?
+            return self.get(self._dict[name]) # maybe handle exception also?
 
     def get_vector(self):
         return self._vector
@@ -59,7 +61,7 @@ class Vector():
 
     def name_arg(self, name, arg_num):
         if 0 <= arg_num < self._size:
-            self._dict[name] = self._vector[arg_num]
+            self._dict[name] = arg_num
 
     def dot(self, vector, ret_type = None):
         """ dot product """
