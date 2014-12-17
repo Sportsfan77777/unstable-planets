@@ -35,9 +35,21 @@ def calculate_eccentric_anomaly(elements):
 	return ecc_anom
 
 def calculate_hyperbolic_anomaly(elements):
-	
+	"""
+	Requires elements: 'e', 'M'
+	"""
 
+	def test_function(elements, ecc_anom):
+		return ecc_anom - elements.get('ecc') * np.sin(ecc_anom)
 
+	def test_function_prime(elements, ecc_anom):
+		return 1.0 - elements.get('ecc') * np.cos(ecc_anom)
+
+	function = lambda x : test_function(elements, x)  ## ### FIX THIS  !!!!!
+	function_prime = lambda x : test_function_prime(elements, x) ##### FIX THIS !!!!!!
+
+	hyp_anom = newton_method(function, function_prime)
+	return hyp_anom
 
 
 def KeplerEquation(mean_anom, e):
