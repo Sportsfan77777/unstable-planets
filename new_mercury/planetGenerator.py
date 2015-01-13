@@ -2,6 +2,8 @@ import numpy as np
 import mercury
 import orbital as orb
 
+from id import ID_Manager
+
 import os
 import sys
 import subprocess
@@ -60,7 +62,7 @@ makeVectorElements = np.vectorize(orb.elements)
 
 
 def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
-                 min_M = 0, max_M = 360, min_sma = 3.1, max_sma = 4.0,
+                 min_M = 0, max_M = 360, min_sma = 3.1, max_sma = 4.0, sep_sma = 1,
                  min_ecc = 0, max_ecc = 0, min_inc = 0, max_inc = 0,
                  mass_bin = 1.0, u_bin = 0.5, a_bin = 1.0, e_bin = 1.0,
                  argw_bin = 0.0, node_bin = 0.0, mean_anom_bin = 1.0, i_bin = 0,
@@ -77,44 +79,44 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     
     num_M = 8       # Number of Planets (Planet = 'Test Mass' <--- No Interaction)
 
-	num_a = 10   # Number of Different Semi-Major Axes
-				# There is a default range of semi-major axes (a_min, a_max)
-				# 'num_a' evenly spaced semi-major axes are produced
-			
-	num_i = 1   # Number of Different Inclinations
-				# There is a default range of inclinations (i_min, i_max)
-				# 'num_a' evenly spaced inclinations are produced
-						
-	num_e = 1   # Number of Different Eccentricities
-				# There is a default range of eccentricities (e_min, e_max)
-				# 'num_a' evenly spaced eccentricities are produced
-				
+    num_a = 10   # Number of Different Semi-Major Axes
+                # There is a default range of semi-major axes (a_min, a_max)
+                # 'num_a' evenly spaced semi-major axes are produced
+            
+    num_i = 1   # Number of Different Inclinations
+                # There is a default range of inclinations (i_min, i_max)
+                # 'num_a' evenly spaced inclinations are produced
+                        
+    num_e = 1   # Number of Different Eccentricities
+                # There is a default range of eccentricities (e_min, e_max)
+                # 'num_a' evenly spaced eccentricities are produced
+                
     ####*** Binary Orbital Parameters ***####
     
-	a_b = 1.00  # Semi-Major Axis
-	e_b = 0.40  # Eccentricity
-	M_b = 1.00  # Total Mass (M1 + M2)
-	u_b = 0.30  # Mass Ratio  M2/(M1 + M2) = M2/M_b
+    a_b = 1.00  # Semi-Major Axis
+    e_b = 0.40  # Eccentricity
+    M_b = 1.00  # Total Mass (M1 + M2)
+    u_b = 0.30  # Mass Ratio  M2/(M1 + M2) = M2/M_b
 
-	omega_b = 0 	  		  # Argument of Pericenter
-	OMEGA_b = 0 	 		  # Longitude of the Ascending Node
-	mean_b = periapse * 180.0 # Mean Anomaly  // THERE IS A BUG HERE!!!!
-	i_b = 0					  # Inclination (By definition, zero)
-	
-	####*** Range of Planet Parameters ***####
-	
-	M_min = 0
-	M_max = 2 * np.pi
+    omega_b = 0               # Argument of Pericenter
+    OMEGA_b = 0               # Longitude of the Ascending Node
+    mean_b = periapse * 180.0 # Mean Anomaly  // THERE IS A BUG HERE!!!!
+    i_b = 0                   # Inclination (By definition, zero)
+    
+    ####*** Range of Planet Parameters ***####
+    
+    M_min = 0
+    M_max = 2 * np.pi
 
-	a_min = 3.1 * a_b  # Note: should be greater than a_b !!!! (P-type)
-	a_max = 4.0 * a_b  
+    a_min = 3.1 * a_b  # Note: should be greater than a_b !!!! (P-type)
+    a_max = 4.0 * a_b  
 
-	i_min = 0
-	i_max = 0 
+    i_min = 0
+    i_max = 0 
 
-	e_min = 0.0001
-	e_max = 0.0001
-	
+    e_min = 0.0001
+    e_max = 0.0001
+    
     """
 
     line_break = 0
@@ -124,56 +126,56 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     # M = mean anomaly
     mean_anomalies = np.ones(num_M) * 2 * np.pi / num_M
     for i in xrange(num_M):
-    	mean_anomalies[i] *= i  # i = 0 to num_M - 1
-	
-	# a = semimajor axis
+        mean_anomalies[i] *= i  # i = 0 to num_M - 1
+    
+    # a = semimajor axis
     semi_major_axes = np.ones(num_a) * min_sma
     if num_a > 1:
-    	sma_range = max_sma - min_sma
-    	step_size = sma_range / (num_a - 1) 
-    	for i in xrange(num_a):
-    		semi_major_axes[i] += (i * step_size)
-		
+        sma_range = max_sma - min_sma
+        step_size = sma_range / (num_a - 1) 
+        for i in xrange(num_a):
+            semi_major_axes[i] += (i * step_size)
+        
     # i = inclination
     min_inc *= np.pi / 180.0
     max_inc *= np.pi / 180.0
     inclinations = np.ones(num_i) * min_inc
     if num_i > 1:
-    	inc_range = max_inc - min_inc
-    	step_size = inc_range / (num_i - 1) 
-    	for i in xrange(num_i):
-    		inclinations[i] += (i * step_size)
-    	
+        inc_range = max_inc - min_inc
+        step_size = inc_range / (num_i - 1) 
+        for i in xrange(num_i):
+            inclinations[i] += (i * step_size)
+        
     # e = eccentricity
     eccentricities = np.ones(num_e) * min_ecc
     if num_e > 1:
-    	ecc_range = max_ecc - min_ecc
-    	step_size = ecc_range / (num_e - 1) 
-    	for i in xrange(num_e):
-    		eccentricities[i] += (i * step_size)
-    	
+        ecc_range = max_ecc - min_ecc
+        step_size = ecc_range / (num_e - 1) 
+        for i in xrange(num_e):
+            eccentricities[i] += (i * step_size)
+        
     """ (1) Above: Initialize Planet Parameters """
 
     """ (2) Below: Convert Orbital Elements to Cartesian Coordinates (Stars) """
 
     # Two Stars
     X0, Y0, Z0, VX0, VY0, VZ0 = \
-    	makeVectorOrbit(a_bin * (1-e_bin), e_bin, i_bin * np.pi/180.0, \
-    					np.pi + argw_bin * np.pi/180.0, node_bin * np.pi/180.0, \
-    					mean_anom_bin * np.pi/180.0, G * mass_bin)
+        makeVectorOrbit(a_bin * (1-e_bin), e_bin, i_bin * np.pi/180.0, \
+                        np.pi + argw_bin * np.pi/180.0, node_bin * np.pi/180.0, \
+                        mean_anom_bin * np.pi/180.0, G * mass_bin)
     X1, Y1, Z1, VX1, VY1, VZ1 = \
-    	makeVectorOrbit(a_bin * (1-e_bin), e_bin, i_bin * np.pi/180.0, \
-    					argw_bin * np.pi/180.0, node_bin * np.pi/180.0, \
-    					mean_anom_bin * np.pi/180.0, G * mass_bin)
-    				
+        makeVectorOrbit(a_bin * (1-e_bin), e_bin, i_bin * np.pi/180.0, \
+                        argw_bin * np.pi/180.0, node_bin * np.pi/180.0, \
+                        mean_anom_bin * np.pi/180.0, G * mass_bin)
+                    
     # Scale Individual Orbits by Mass Ratio u_bin & (1 - u_bin)
     scale0 = u_bin
     X0, Y0, Z0, VX0, VY0, VZ0 = \
-    	X0*scale0, Y0*scale0, Z0*scale0, VX0*scale0, VY0*scale0, VZ0*scale0
+        X0*scale0, Y0*scale0, Z0*scale0, VX0*scale0, VY0*scale0, VZ0*scale0
 
     scale1 = 1.0 - u_bin
     X1, Y1, Z1, VX1, VY1, VZ1 = \
-    	X1*scale1, Y1*scale1, Z1*scale1, VX1*scale1, VY1*scale1, VZ1*scale1
+        X1*scale1, Y1*scale1, Z1*scale1, VX1*scale1, VY1*scale1, VZ1*scale1
 
     # Check that the barycenter is (still) at the origin
     baryX = ((1 - u_bin) * X0 + u_bin * X1)
@@ -195,7 +197,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     deltaVY = VY1 - VY0
     deltaVZ = VZ1 - VZ0
     peri_b, ecc_b, inc_b, arg_b, node_b, true_b, mean_b, eAnom_b = \
-    	makeVectorElements(deltaX, deltaY, deltaZ, deltaVX, deltaVY, deltaVZ, G * mass_bin)
+        makeVectorElements(deltaX, deltaY, deltaZ, deltaVX, deltaVY, deltaVZ, G * mass_bin)
     print "Central Binary Orbital Elements:", peri_b / (1 - ecc_b), u_bin, ecc_b, inc_b
 
     # Convert to coordinates with respect to the 1st body
@@ -222,8 +224,8 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     gather = [] # Cartesian Product of All Orbital Element Combinations
     for i in itertools.product(mean_anomalies, semi_major_axes, \
-    							inclinations, eccentricities):
-    	gather.append(i)
+                                inclinations, eccentricities):
+        gather.append(i)
 
     # Mercury Input Arrays
     mean_array = [m for (m,s,i,e) in gather]
@@ -238,24 +240,40 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     m_deg_array = [int(round(x * 180.0 / np.pi)) for x in mean_array]
     i_deg_array = [int(round(x * 180.0 / np.pi)) for x in inc_array]
 
+    id_manager = ID_Manager()
+
     planet_names = []
+    planet_id_names = []
+
+    base_name = "A%1." + ("%df" % sep_sma) + "_M%1.0f" 
+    id_base_name = "ID_%04d"
+    id_count = 0
     for i in xrange(total_planets):
-    	a = m_deg_array[i] 
-    	b = sm_axis_array[i] * 10
-    	c = i_deg_array[i] * 100 # to show two (2) decimal places
-    	d = ecc_array[i] * 100
-    	#planet_names.append(' Planet_M%1.0f_S%1.0f_I%1.0f_E%1.0f'%(a, b, c, d))
-    	planet_names.append(' M%1.0f_S%1.0f'%(a, b)) # (sm-axis, mean anomaly)
-    	#planet_names.append(' M%d'%(i))
-	
+        a = sm_axis_array[i]
+        b = m_deg_array[i]
+        #c = i_deg_array[i] * 100 # to show two (2) decimal places
+        #d = ecc_array[i] * 100
+        #planet_names.append(' Planet_M%1.0f_S%1.0f_I%1.0f_E%1.0f'%(a, b, c, d))
+        
+        name_i = base_name % (a, b) # (sm-axis, mean anomaly)
+        planet_names.append(name_i) 
+
+        id_name_i = id_base_name % id_count
+        planet_id_names.append(id_name_i)
+        id_count += 1
+
+    # Manager (ID, name) pairs using ID_Manager from id.py
+    id_manager.add_many(names = planet_names, ids = planet_id_names)
+    id_manager.save()
+    
     #print planet_names
     
     # Convert to Cartesian Coordinates
     Xp, Yp, Zp, VXp, VYp, VZp = \
-    	makeVectorOrbit(np.multiply(sm_axis_array, (np.ones(total_planets) - ecc_array)), \
-    					ecc_array, inc_array, \
-    					omega_array, OMEGA_array, \
-						mean_array, G * mass_bin)
+        makeVectorOrbit(np.multiply(sm_axis_array, (np.ones(total_planets) - ecc_array)), \
+                        ecc_array, inc_array, \
+                        omega_array, OMEGA_array, \
+                        mean_array, G * mass_bin)
 
     # Convert to coordinates with respect to the 1st body
     x_p, y_p, z_p, vx_p, vy_p, vz_p = Xp-X0, Yp-Y0, Zp-Z0, VXp-VX0, VYp-VY0, VZp-VZ0
@@ -264,10 +282,10 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     # Convert back to asteroidal coordinates
     peri_p, ecc_p, inc_p, arg_p, node_p, true_p, mean_p, eAnom_p = \
-    	makeVectorElements(x_p, y_p, z_p, vx_p, vy_p, vz_p, G * mass_bin)
-	
+        makeVectorElements(x_p, y_p, z_p, vx_p, vy_p, vz_p, G * mass_bin)
+    
     print "error above?"
-	
+    
     a_p = peri_p / (1 - ecc_p) # semi-major axis
 
     """ (3) Above: Set Up Arrays (Planets) """
@@ -285,9 +303,9 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
    
 
     mercury.write_mercury_files(x_b, y_b, z_b, vx_b, vy_b, vz_b, mass_b,
-    							np.zeros(2),np.zeros(2),np.zeros(2),
-    							name_b, 'big.in',
-    							directory = integration_dir)
+                                np.zeros(2),np.zeros(2),np.zeros(2),
+                                name_b, 'big.in',
+                                directory = integration_dir)
 
     spin_x = np.zeros(total_planets)
     spin_y = np.zeros(total_planets)
@@ -301,17 +319,17 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     """
     # Asteroidal Option
     mercury.write_mercury_files(a_p, ecc_p, inc_p * 180.0/np.pi, \
-    							arg_p, node_p, mean_p , mass_p, \
-    							spin_x, spin_y, spin_z, \
-    							planet_names, 'small.in', \
-    							body_type = 'small', coord_type = 'ast')
+                                arg_p, node_p, mean_p , mass_p, \
+                                spin_x, spin_y, spin_z, \
+                                planet_names, 'small.in', \
+                                body_type = 'small', coord_type = 'ast')
 
-	# Cartesian Option
+    # Cartesian Option
     """
     mercury.write_mercury_files(x_p, y_p, z_p, vx_p, vy_p, vz_p, mass_p, \
-    							spin_x, spin_y, spin_z, \
-    							planet_names, 'small.in', directory = integration_dir, \
-    							body_type = 'small', coord_type = 'cart')
+                                spin_x, spin_y, spin_z, \
+                                planet_id_names, 'small.in', directory = integration_dir, \
+                                body_type = 'small', coord_type = 'cart')
 
     """ (4) Write Mercury Files """
     
@@ -321,71 +339,71 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     if plot_orbits:
         print "before plot"
-    	if plot_barycentric:
-    		plt.plot([0]+X0,[0]+Y0,'bo',mew=0,ms=7.0)
-    		plt.plot(x_b+X0,y_b+Y0,'bo',mew=0,ms=7.0)
-    		plt.plot(x_p+X0,y_p+Y0,'go',mew=0,ms=4.0)
-    	else:
-    		plt.plot([0],[0],'bo',mew=0,ms=7.0)
-    		plt.plot(x_b,y_b,'bo',mew=0,ms=7.0)
-    		plt.plot(x_p,y_p,'go',mew=0,ms=4.0)
-    	for k in range(0,x_p.shape[0]):
-    		#anomalies=np.arange(MeanAnom[k],MeanAnom[k]+2*np.pi,0.01)
-    		#xorb, yorb, zorb, vxorb, vyorb, vorb = vecOrbit(ap[k]*(1-ep[k]),ep[k],Ip[k]*np.pi/180.0,omegap[k],
-    		#                                                Omegap[k],anomalies,G*MB*(1-muB))
-    		#xorb, yorb, zorb, vxorb, vyorb, vorb = vecOrbit(a[k]*(1-e[k]),e[k],I[k]*np.pi/180.0,omega[k]*np.pi/180.0,
-    		#                                                Omega[k]*np.pi/180.0,anomalies,G*MB)
+        if plot_barycentric:
+            plt.plot([0]+X0,[0]+Y0,'bo',mew=0,ms=7.0)
+            plt.plot(x_b+X0,y_b+Y0,'bo',mew=0,ms=7.0)
+            plt.plot(x_p+X0,y_p+Y0,'go',mew=0,ms=4.0)
+        else:
+            plt.plot([0],[0],'bo',mew=0,ms=7.0)
+            plt.plot(x_b,y_b,'bo',mew=0,ms=7.0)
+            plt.plot(x_p,y_p,'go',mew=0,ms=4.0)
+        for k in range(0,x_p.shape[0]):
+            #anomalies=np.arange(MeanAnom[k],MeanAnom[k]+2*np.pi,0.01)
+            #xorb, yorb, zorb, vxorb, vyorb, vorb = vecOrbit(ap[k]*(1-ep[k]),ep[k],Ip[k]*np.pi/180.0,omegap[k],
+            #                                                Omegap[k],anomalies,G*MB*(1-muB))
+            #xorb, yorb, zorb, vxorb, vyorb, vorb = vecOrbit(a[k]*(1-e[k]),e[k],I[k]*np.pi/180.0,omega[k]*np.pi/180.0,
+            #                                                Omega[k]*np.pi/180.0,anomalies,G*MB)
     
-    		if plot_barycentric:
-    			peridistp,ep,Ip,omegap,Omegap,TrueAnomp, MeanAnomp,EccAnomp = \
-    					makeVectorElements(x_p[k] + X0, y_p[k] + Y0, z_p[k] + Z0, \
-    									vx_p[k] + VX0, vy_p[k] + VY0, vz_p[k] + VZ0, G * mass_bin)
-    		else:
-    			peridistp,ep,Ip,omegap,Omegap,TrueAnomp, MeanAnomp,EccAnomp = \
-    					makeVectorElements(x_p[k], y_p[k], z_p[k], \
-    									vx_p[k], vy_p[k], vz_p[k], G * mass_bin)
-    									
-    		anomalies = np.arange(MeanAnomp,MeanAnomp+2*np.pi,0.01)
-    	
-    		xorb, yorb, zorb, vxorb, vyorb, vorb = \
-    					makeVectorOrbit(peridistp, ep, Ip, omegap, Omegap, anomalies, G * mass_bin)
-    	
-    		plt.plot(xorb,yorb,'k-')
+            if plot_barycentric:
+                peridistp,ep,Ip,omegap,Omegap,TrueAnomp, MeanAnomp,EccAnomp = \
+                        makeVectorElements(x_p[k] + X0, y_p[k] + Y0, z_p[k] + Z0, \
+                                        vx_p[k] + VX0, vy_p[k] + VY0, vz_p[k] + VZ0, G * mass_bin)
+            else:
+                peridistp,ep,Ip,omegap,Omegap,TrueAnomp, MeanAnomp,EccAnomp = \
+                        makeVectorElements(x_p[k], y_p[k], z_p[k], \
+                                        vx_p[k], vy_p[k], vz_p[k], G * mass_bin)
+                                        
+            anomalies = np.arange(MeanAnomp,MeanAnomp+2*np.pi,0.01)
+        
+            xorb, yorb, zorb, vxorb, vyorb, vorb = \
+                        makeVectorOrbit(peridistp, ep, Ip, omegap, Omegap, anomalies, G * mass_bin)
+        
+            plt.plot(xorb,yorb,'k-')
 
-    	plt.axis([-5,5,-5,5])
-    	plt.show()
+        plt.axis([-5,5,-5,5])
+        plt.show()
 
-    	if plot_barycentric:
-    		plt.plot([0]+Y0,[0]+Z0,'bo',mew=0,ms=7.0)
-    		plt.plot(y_b+Y0,z_b+Z0,'bo',mew=0,ms=7.0)
-    		plt.plot(y_p+Y0,z_p+Z0,'go',mew=0,ms=4.0)
-    	else:
-    		plt.plot([0],[0],'bo',mew=0,ms=7.0)
-    		plt.plot(y_b,z_b,'bo',mew=0,ms=7.0)
-    		plt.plot(y_p,z_p,'go',mew=0,ms=4.0)
-    	for k in range(0,y_p.shape[0]):
-    		plt.plot(yorb,zorb,'k-')
+        if plot_barycentric:
+            plt.plot([0]+Y0,[0]+Z0,'bo',mew=0,ms=7.0)
+            plt.plot(y_b+Y0,z_b+Z0,'bo',mew=0,ms=7.0)
+            plt.plot(y_p+Y0,z_p+Z0,'go',mew=0,ms=4.0)
+        else:
+            plt.plot([0],[0],'bo',mew=0,ms=7.0)
+            plt.plot(y_b,z_b,'bo',mew=0,ms=7.0)
+            plt.plot(y_p,z_p,'go',mew=0,ms=4.0)
+        for k in range(0,y_p.shape[0]):
+            plt.plot(yorb,zorb,'k-')
 
-    	plt.axis([-5,5,-5,5])
-    	plt.show()
+        plt.axis([-5,5,-5,5])
+        plt.show()
 
-    	if plot_barycentric:
-    		fig=plt.figure()
-    		ax=Axes3D(fig)
-    		ax.plot([0]+X0,[0]+Y0,[0]+Z0,'bo')
-    		ax.plot(x_b+X0,y_b+Y0,z_b+Z0,'bo')
-    		ax.plot(x_p+X0,y_p+Y0,z_p+Z0,'go')
-    		for k in range(0,y_p.shape[0]):
-    			ax.plot(xorb,yorb,zorb,'k-')
-    		ax.axis('equal')
-    		ax.auto_scale_xyz([-1,1],[-1,1],[-1,1])
-    		plt.show()
+        if plot_barycentric:
+            fig=plt.figure()
+            ax=Axes3D(fig)
+            ax.plot([0]+X0,[0]+Y0,[0]+Z0,'bo')
+            ax.plot(x_b+X0,y_b+Y0,z_b+Z0,'bo')
+            ax.plot(x_p+X0,y_p+Y0,z_p+Z0,'go')
+            for k in range(0,y_p.shape[0]):
+                ax.plot(xorb,yorb,zorb,'k-')
+            ax.axis('equal')
+            ax.auto_scale_xyz([-1,1],[-1,1],[-1,1])
+            plt.show()
 
     """ (5) Plot Orbits (Optional) """
     
 def execute_mercury(directory, hold = True):
     """ 
-	executes the mercury script in a specified directory
+    executes the mercury script in a specified directory
     corresponding to an integration
     
     hold: whether to return to initial directory
@@ -404,7 +422,7 @@ def execute_mercury(directory, hold = True):
        
 def getEjectionData(directory, hold = True):
     """ 
-	executes the mercury script in a specified directory
+    executes the mercury script in a specified directory
     corresponding to an integration
     
     hold: whether to return to initial directory
@@ -428,7 +446,7 @@ def getEjectionData(directory, hold = True):
     if hold:
        os.chdir("../")
     
-	
+    
 def new_option_parser():
   """ parameters for simulation of 1 to N independent planets around two binary stars """
   result = OptionParser()
@@ -459,6 +477,9 @@ def new_option_parser():
   result.add_option("--max_sma", 
                     dest="max_sma", type="float", default = 4.0,
                     help="planet semi-major axis maximum [%default]")
+  result.add_option("--sep_sma", 
+                    dest="max_sma", type="int", default = 1,
+                    help="number of decimal places in each planet semi-major axis value [%default]")
   result.add_option("--min_ecc", 
                     dest="min_ecc", type="float", default = 0.0000001,
                     help="planet eccentricity minimum [%default]")
@@ -514,6 +535,7 @@ def execute_main(o, arguments):
    i_bin_str = int(round(o.min_inc, 0))
    M_bin_str = int(round(o.mean_anom_bin, 0))
    integration_dir = "%s_u%d_e%d_i%03d_M%03d" % (o.dir, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
+   o.integration_dir = integration_dir
    
    if o.e_bin == 0:
       o.e_bin = 0.0001 # not zero, just really small
@@ -521,7 +543,7 @@ def execute_main(o, arguments):
    print "Grid Planets"
    time_a = time.time()
    grid_planets(num_M = o.num_M, num_a = o.num_a, num_i = o.num_i, num_e = o.num_e,
-                min_M = o.min_M, max_M = o.max_M, min_sma = o.min_sma, max_sma = o.max_sma,
+                min_M = o.min_M, max_M = o.max_M, min_sma = o.min_sma, max_sma = o.max_sma, sep_sma = o.sep_sma,
                 min_ecc = o.min_ecc, max_ecc = o.max_ecc, 
                 min_inc = o.min_inc, max_inc = o.max_inc,
                 mass_bin = o.mass_bin, u_bin = o.u_bin, a_bin = o.a_bin, e_bin = o.e_bin,

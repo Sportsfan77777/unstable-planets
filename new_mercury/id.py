@@ -70,3 +70,19 @@ class ID_Manager():
         pickle.dump(self._id_dict, f_ids)
         pickle.dump(self._name_dict, f_names)
 
+    def find_replace_info_out(self):
+        # Writes a new info.out file "named_info.out" using names instead of ids
+        f_r = open("info.out", 'r')
+        f_w = open("named_info.out", 'w')
+
+        for line in f_r:
+            if "ID_" in line:
+                id_name = line.split()[0]
+                replacement = line.replace(id_name, self.get_name(id_name))
+                f_w.write(replacement)
+            else:
+                f_w.write(replacement)
+
+        f_r.close()
+        f_w.close()
+

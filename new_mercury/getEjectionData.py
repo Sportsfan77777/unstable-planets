@@ -3,6 +3,7 @@ import string
 import sys
 
 import pickle
+from id import ID_Manager
 
 """
 This program converts the collision + ejection data from info.out
@@ -41,6 +42,9 @@ pickle_fn = "ids.p"
 pickle_f = open(pickle_fn, "rb")
 id_dict = pickle.load(pickle_f)
 pickle_f.close()
+
+ID_manager = ID_Manager()
+ID_manager.read()
 
 """ Read from into.out file (output data from m.exe = mercury) """
 
@@ -85,7 +89,9 @@ if num_a > 1:
 		semi_major_axes[i] += (i * step_size)
 		semi_major_axes[i] = round(semi_major_axes[i], 2) # This is specific for a = %.2f  <<--- Note the change from x.x to x.xx!!
 		
-sm_array = [int(100.0 * x) for x in semi_major_axes]  # Note the change from x.x to x.xx!!!!!!
+base = 10.0 ** o.sep_sma # USED LATER!
+
+sm_array = [int(base * x) for x in semi_major_axes]  # Note the change from x.x to x.xx!!!!!!
 #print sm_array # S Names
 
 ejectionTable = np.zeros((num_a, N)) + 99.9
@@ -100,11 +106,11 @@ for line in data:
 	nxt_split = nxt_str.split(' ')
 	
 	ID_str = nxt_split[0] # This is the ID number
-	ID_name = id_dict(ID_str)
+	ID_name = id_dict[ID_str]
 	id_split = ID_name.split('_')
 
-	M_str = id_split[0]
-	S_str = id_split[1]
+	A_str = id_split[0]
+	M_str = id_split[1]
 
 	Eject_val = int(float(nxt_split[-2])) / 1000.0 # This is #c (in kyr)
 	Eject = round(Eject_val, 1)
@@ -136,7 +142,7 @@ stable_array = np.zeros(len(sm_array))
 rows = []
 count = 0
 for i,y in enumerate(sm_array):
-	row = str(y / 10.).center(width) + '|'
+	row = str(y / base).center(width) + '|'
 	stable = True
 	for ej in ejectionTable[i]:
 		s = ""
@@ -157,6 +163,8 @@ if len(sys.argv) > 1:
 else:
    f = open("eject.t", 'w')
 	
+header = "Directory: %s\n" % o.integration_dir
+f.write(header)
 print rowzero
 f.write(rowzero + "\n")
 print dash_row
@@ -184,6 +192,12 @@ pickle_f.close()
 pickle_f = open("mean_anomalies.p", "wb")
 pickle.dump(m_deg_array, pickle_f)
 pickle_f.close()
+
+# Write Ejection Table!
+# (i) as table
+
+
+# (ii) as array of dictionaries
 
 
 

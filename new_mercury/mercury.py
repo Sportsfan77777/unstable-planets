@@ -48,19 +48,16 @@ def mkdir_integration(directory, template_dir = None):
     #mkdir(directory, safety = True) # Note: multiple = False (only one directory created)
     
     
-def write_param_file(central_mass, src_dir = None, dest_dir = None,
-                     fn_start = "param_start.in", fn_finish = "param_finish.in"):
+def write_param_file(central_mass, duration = 10000000, src_dir = None, dest_dir = None,
+                     fn_param_base = "param_base.in"):
                      
     if src_dir is None:
-       fn_start = template_path + fn_start
-       fn_finish = template_path + fn_finish
+       fn_param_base = template_path + fn_param_base
     else:
        if directory[:0] == "/":
-         fn_start = src_dir + fn_start
-         fn_finish = src_dir + fn_finish
+         fn_param_base = src_dir + fn_param_base
        else:
-         fn_start = src_dir + "/" + fn_start
-         fn_finish = src_dir + "/" + fn_finish
+         fn_param_base = src_dir + "/" + fn_param_base
          
     fn_param = "param.in"
        
@@ -72,24 +69,28 @@ def write_param_file(central_mass, src_dir = None, dest_dir = None,
        else:
          fn_param = dest_dir + "/" + fn_param
     
-    f1 = open(fn_start, 'r')
-    f2 = open(fn_finish, 'r')
+    f1 = open(fn_param_base, 'r')
+    f2 = open(fn_param, 'w')
     
-    f3 = open(fn_param, 'w')
-    
-    start = f1.read()
-    middle = " central mass (solar) = %0.1f\n" % central_mass
-    finish = f2.read()
-    
-    all = start + middle + finish
+    needs_to_be_filled = f1.read()
+
+    # central mass string
+    central_mass_string = "%0.1f" % central_mass
+
+    # duration string
+    sci_notation = "{:.2E}".format(duration)
+    sci_decimal = sci_notation[:4]
+    sci_power = str(int(sci_notation[6:]))
+    duration_string = "%sd%s" % (sci_decimal, sci_power)
+
+    complete = needs_to_be_filled % (duration_string, central_mass_string) # Insert (1) simulation time and (2) central mass
     
     print " *** Writing param.in file *** "
         
-    f3.write(all)
+    f2.write(complete)
     
     f1.close()
     f2.close()
-    f3.close()
           
 
 def write_mercury_files(A, B, C, D, E, F, mass,
@@ -130,12 +131,12 @@ def write_mercury_files(A, B, C, D, E, F, mass,
             f.write(" style (Cartesian, Asteroidal, Cometary) = Ast\n")
         else:
             f.close()
-            print 'ERROR: Unrecognized coord_type input',coord_type
+            print 'ERROR: Unrecognized coord_type input', coord_type
             return 0
         f.write(")---------------------------------------------------------------------\n")
     else:
         f.close()
-        print 'ERROR: Unrecognized body_type input',body_type
+        print 'ERROR: Unrecognized body_type input', body_type
         return 0
     
     Nbody = A.shape[0]
