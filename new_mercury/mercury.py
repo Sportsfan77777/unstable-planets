@@ -96,7 +96,7 @@ def write_param_file(central_mass, duration = 10000000, src_dir = None, dest_dir
 def write_mercury_files(A, B, C, D, E, F, mass,
                         spinx, spiny, spinz, 
                         name, filename, directory = None,
-                        body_type='big',coord_type='cart'):
+                        body_type='big', coord_type='cart'):
 
     #if coord_type = 'cart'
     # A,B,C,D,E,F = x, y, z, vx, vy ,vz

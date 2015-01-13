@@ -41,13 +41,17 @@ class ID_Manager():
         str_id = str(id_i)
         return self._id_dict[str_id]
 
-    def read(self, name = None):
+    def read(self, directory = None, name = None):
         if name:
             fn_ids = "ids_%s.p" % name
             fn_names = "names_%s.p" % name
         else:
             fn_ids = "ids.p"
             fn_names = "names.p"
+
+        if directory:
+            fn_ids = "%s/%s" % (directory, fn_ids)
+            fn_names = "%s/%s" % (directory, fn_names)
 
         f_ids = open(fn_ids, "rb")
         f_names = open(fn_names, "rb")
@@ -56,13 +60,17 @@ class ID_Manager():
         self._name_dict = pickle.load(f_names)
 
 
-    def save(self, name = None):
+    def save(self, directory = None, name = None):
         if name:
             fn_ids = "ids_%s.p" % name
             fn_names = "names_%s.p" % name
         else:
             fn_ids = "ids.p"
             fn_names = "names.p"
+
+        if directory:
+            fn_ids = "%s/%s" % (directory, fn_ids)
+            fn_names = "%s/%s" % (directory, fn_names)
 
         f_ids = open(fn_ids, "wb")
         f_names = open(fn_names, "wb")
@@ -81,7 +89,7 @@ class ID_Manager():
                 replacement = line.replace(id_name, self.get_name(id_name))
                 f_w.write(replacement)
             else:
-                f_w.write(replacement)
+                f_w.write(line)
 
         f_r.close()
         f_w.close()

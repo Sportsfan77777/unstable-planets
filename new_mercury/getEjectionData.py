@@ -1,5 +1,6 @@
 import numpy as np
 import string
+import math
 import sys
 
 import pickle
@@ -57,14 +58,14 @@ f.close()
 
 data = []
 for line in lines:
-	a = line.find('ejected') > -1
-	b = line.find('collided') > -1
-	c = line.find('hit') > -1
-	if a or b or c:
-		data.append(line)
-		#print line
-		
-"""	
+    a = line.find('ejected') > -1
+    b = line.find('collided') > -1
+    c = line.find('hit') > -1
+    if a or b or c:
+        data.append(line)
+        #print line
+        
+""" 
 Format: ID_#%04d collided with the central body at #c.#d years
 Format: ID_#%04d ejected at #c.#d years
 
@@ -75,23 +76,21 @@ Read ID_# and look up corresponding mean_anomaly and semimajor_axis, #c as eject
 """ M """
 mean_anomalies = np.ones(N) * 2 * np.pi / N
 for i in xrange(N):
-	mean_anomalies[i] *= i  # i = 0 to N - 1
-	
+    mean_anomalies[i] *= i  # i = 0 to N - 1
+    
 m_deg_array = [int(round(x * 180.0 / np.pi)) for x in mean_anomalies]
 #print m_deg_array # M Names
 
 """ a """
 semi_major_axes = np.ones(num_a) * a_min
 if num_a > 1:
-	a_range = a_max - a_min
-	step_size = a_range / (num_a - 1) 
-	for i in xrange(num_a):
-		semi_major_axes[i] += (i * step_size)
-		semi_major_axes[i] = round(semi_major_axes[i], 2) # This is specific for a = %.2f  <<--- Note the change from x.x to x.xx!!
-		
-base = 10.0 ** o.sep_sma # USED LATER!
+    a_range = a_max - a_min
+    step_size = a_range / (num_a - 1) 
+    for i in xrange(num_a):
+        semi_major_axes[i] += (i * step_size)
+        semi_major_axes[i] = round(semi_major_axes[i], o.sep_sma) # <<--- Note the change from x.x to x.xx!!
 
-sm_array = [int(base * x) for x in semi_major_axes]  # Note the change from x.x to x.xx!!!!!!
+sm_array = [round(x, o.sep_sma) for x in semi_major_axes] # <<<<---- ARCHAIC use!!!!!!
 #print sm_array # S Names
 
 ejectionTable = np.zeros((num_a, N)) + 99.9
@@ -99,33 +98,32 @@ ejectionTable = np.zeros((num_a, N)) + 99.9
 # Parse Ejection Data Into Table
 
 for line in data:
-	split_str = line.split('_')
-	#ID_label = split_str[0] # This is 'ID' <<<---- Assert this?
-	
-	nxt_str = split_str[1]
-	nxt_split = nxt_str.split(' ')
-	
-	ID_str = nxt_split[0] # This is the ID number
-	ID_name = id_dict[ID_str]
-	id_split = ID_name.split('_')
+    split_str = line.split('_')
+    #ID_label = split_str[0] # This is 'ID' <<<---- Assert this?
+    
+    nxt_split = line.split(' ')
+    
+    ID_str = nxt_split[1] # This is the ID number
+    ID_name = id_dict[ID_str]
+    id_split = ID_name.split('_')
 
-	A_str = id_split[0]
-	M_str = id_split[1]
+    A_str = id_split[0]
+    M_str = id_split[1]
 
-	Eject_val = int(float(nxt_split[-2])) / 1000.0 # This is #c (in kyr)
-	Eject = round(Eject_val, 1)
-	
-	#print M_str[2:], S_str[1:], Eject
-	
-	Mi = m_deg_array.index(int(M_str[2:]))
-	Si = sm_array.index(int(S_str[1:]))
-	
-	#print Mi, Si
-	ejectionTable[Si][Mi] = Eject  ### <<<<------ Save this table somehow (as dictionary?)
-	
-	# parse into M and a (directly or indirectly?)
+    eject_val = int(float(nxt_split[-2])) / 1000.0 # This is #c (in kyr)
+    eject = round(eject_val, 1)
+    
+    #print M_str[1:], A_str[1:], Eject
+    
+    Ai = sm_array.index(float(A_str[1:]))
+    Mi = m_deg_array.index(int(M_str[1:]))
+    
+    #print Mi, Si
+    ejectionTable[Ai][Mi] = eject  ### <<<<------ Save this table somehow (as dictionary?)
+    
+    # parse into M and a (directly or indirectly?)
 
-# Simple Print	
+# Simple Print  
 #print ejectionTable, '\n'
 
 # Pretty Print
@@ -134,35 +132,37 @@ rowzero = phase_str[phase].center(width) + '|'
 dash = '-' * width
 dash_row = dash
 for x in m_deg_array:
-	rowzero += (str(x)).center(width)
-	dash_row += dash
-	
+    rowzero += (str(x)).center(width)
+    dash_row += dash
+    
 stable_array = np.zeros(len(sm_array))
-	
+    
 rows = []
 count = 0
+str_y_base = "%.0" + ("%d" % o.sep_sma) + "f"
 for i,y in enumerate(sm_array):
-	row = str(y / base).center(width) + '|'
-	stable = True
-	for ej in ejectionTable[i]:
-		s = ""
-		if ej == 99.9:
-			s = "+".center(width)
-		else:
-			s = str(ej).center(width)
-			stable = False
-		row += s
-	rows.append(row)
-	if stable == True:
-	   stable_array[i] = 1
-	
+    str_y = str_y_base % y
+    row = str_y.center(width) + '|'
+    stable = True
+    for ej in ejectionTable[i]:
+        s = ""
+        if ej == 99.9:
+            s = "+".center(width)
+        else:
+            s = str(ej).center(width)
+            stable = False
+        row += s
+    rows.append(row)
+    if stable == True:
+       stable_array[i] = 1
+    
 # Write Pretty Print to File
 if len(sys.argv) > 1:
    fn = sys.argv[1]  # write to a file (if provided)
    f = open(fn, 'a')
 else:
    f = open("eject.t", 'w')
-	
+    
 header = "Directory: %s\n" % o.integration_dir
 f.write(header)
 print rowzero

@@ -261,10 +261,6 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
         id_name_i = id_base_name % id_count
         planet_id_names.append(id_name_i)
         id_count += 1
-
-    # Manager (ID, name) pairs using ID_Manager from id.py
-    id_manager.add_many(names = planet_names, ids = planet_id_names)
-    id_manager.save()
     
     #print planet_names
     
@@ -306,6 +302,10 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
                                 np.zeros(2),np.zeros(2),np.zeros(2),
                                 name_b, 'big.in',
                                 directory = integration_dir)
+
+    # Save Manager (ID, name) pairs using ID_Manager from id.py
+    id_manager.add_many(names = planet_names, ids = planet_id_names)
+    id_manager.save(directory = integration_dir)
 
     spin_x = np.zeros(total_planets)
     spin_y = np.zeros(total_planets)
@@ -478,7 +478,7 @@ def new_option_parser():
                     dest="max_sma", type="float", default = 4.0,
                     help="planet semi-major axis maximum [%default]")
   result.add_option("--sep_sma", 
-                    dest="max_sma", type="int", default = 1,
+                    dest="sep_sma", type="int", default = 1,
                     help="number of decimal places in each planet semi-major axis value [%default]")
   result.add_option("--min_ecc", 
                     dest="min_ecc", type="float", default = 0.0000001,
