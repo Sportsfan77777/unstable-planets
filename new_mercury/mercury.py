@@ -9,8 +9,8 @@ import sys
 
 G=2.959122082855911E-4
 
-template_path = "/Users/Sportsfan77777/Documents/Fall 2014/ASTRO 4940/planets/tests/template/"
-#template_path = "/home/astrosun/mhammer/tests/template/"
+#template_path = "/Users/Sportsfan77777/Documents/Fall 2014/ASTRO 4940/planets/tests/template/"
+template_path = "/home/astrosun/mhammer/tests/template/"
 
 def mkdir(directory, safety = False, multiple = False):
   """ make a directory if it doesn't exist, with options for protection and sub-directories """
@@ -78,7 +78,8 @@ def write_param_file(central_mass, duration = 10000000, src_dir = None, dest_dir
     central_mass_string = "%0.1f" % central_mass
 
     # duration string
-    sci_notation = "{:.2E}".format(duration)
+    print "Duration", duration
+    sci_notation = "%.2E" % duration
     sci_decimal = sci_notation[:4]
     sci_power = str(int(sci_notation[6:]))
     duration_string = "%sd%s" % (sci_decimal, sci_power)

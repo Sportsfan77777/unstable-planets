@@ -79,6 +79,8 @@ for i in xrange(N):
     mean_anomalies[i] *= i  # i = 0 to N - 1
     
 m_deg_array = [int(round(x * 180.0 / np.pi)) for x in mean_anomalies]
+#m_deg_array = [("03d" % x) for x in mean_anomalies_array]  # <<<<<------- FIX THIS!!!!!!! (for id.py, not here...)
+
 #print m_deg_array # M Names
 
 """ a """

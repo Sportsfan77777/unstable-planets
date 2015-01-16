@@ -66,6 +66,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
                  min_ecc = 0, max_ecc = 0, min_inc = 0, max_inc = 0,
                  mass_bin = 1.0, u_bin = 0.5, a_bin = 1.0, e_bin = 1.0,
                  argw_bin = 0.0, node_bin = 0.0, mean_anom_bin = 1.0, i_bin = 0,
+                 simtime = 10000000,
                  plot_orbits = 0, plot_barycentric = 0, dir = "simtest",
                  integration_dir = None):
     """
@@ -314,7 +315,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     
     
     central_mass = mass_bin - mass_b
-    mercury.write_param_file(central_mass, dest_dir = integration_dir)
+    mercury.write_param_file(central_mass, duration = simtime, dest_dir = integration_dir)
     
     """
     # Asteroidal Option
@@ -517,6 +518,9 @@ def new_option_parser():
   result.add_option("--i_bin",
                     dest="i_bin", type="float", default = 0.0,
                     help="inclination of the binary stars in deg [%default]")
+  result.add_option("--time",
+                    dest="time", type="int", default = 10000000,
+                    help="duration of simulation (in days) [%default]")
   result.add_option("--plot_orb",
                     dest="plot_orb", type="int", default = 0,
                     help="plot orbits (0 or 1) [%default]")
@@ -549,6 +553,7 @@ def execute_main(o, arguments):
                 mass_bin = o.mass_bin, u_bin = o.u_bin, a_bin = o.a_bin, e_bin = o.e_bin,
                 argw_bin = o.argw_bin, node_bin = o.node_bin, 
                 mean_anom_bin = o.mean_anom_bin, i_bin = o.i_bin,
+                simtime = o.time,
                 plot_orbits = o.plot_orb, plot_barycentric = o.plot_bary,
                 integration_dir = integration_dir)
                 
