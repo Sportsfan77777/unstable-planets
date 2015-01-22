@@ -197,7 +197,9 @@ pickle_f.close()
 
 # Write Ejection Table!
 # (i) as table
-
+pickle_f = open("table_of_ejections.p", "wb")
+pickle.dump(ejectionTable, pickle_f)
+pickle_f.close()
 
 # (ii) as array of dictionaries
 
