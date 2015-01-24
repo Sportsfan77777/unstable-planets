@@ -423,7 +423,7 @@ def execute_mercury(directory, hold = True):
        
 def getEjectionData(directory, hold = True):
     """ 
-    executes the mercury script in a specified directory
+    gets Ejection Data in a specified directory
     corresponding to an integration
     
     hold: whether to return to initial directory
@@ -432,20 +432,33 @@ def getEjectionData(directory, hold = True):
        Requires the directory is one level below
     """
     
-    # Name Output based on directory extension name
-    
-    u = directory.find("_")
-    
-    #eject_name = "eject%s.t" % directory[u:]
-    
     ejectionData = ["python", "getEjectionData.py"]
-    #ejectionData = ["python", "getEjectionData.py", eject_name]
     os.chdir(directory)
     subprocess.call(ejectionData) 
     
     # Return to start directory
     if hold:
        os.chdir("../")
+
+def getMeanSMAs(directory, hold = True):
+    """ 
+    gets Mean SMAs in a specified directory
+    corresponding to an integration
+    
+    hold: whether to return to initial directory
+    
+    if hold == True:
+       Requires the directory is one level below
+    """
+    
+    meanSMAs = ["python", "getMeanSMAs.py"]
+    os.chdir(directory)
+    subprocess.call(meanSMAs) 
+    
+    # Return to start directory
+    if hold:
+       os.chdir("../")
+
     
     
 def new_option_parser():
@@ -580,6 +593,13 @@ def execute_main(o, arguments):
    time_a = time.time()
    getEjectionData(integration_dir)
    print "Done Getting Ejection Data"
+   time_b = time.time()   
+   print "Time: %.4f" % (time_b - time_a)
+
+   print "Getting Output Data"
+   time_a = time.time()
+   getMeanSMAs(integration_dir)
+   print "Done Getting Output Data"
    time_b = time.time()   
    print "Time: %.4f" % (time_b - time_a)
 
