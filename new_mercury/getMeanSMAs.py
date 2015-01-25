@@ -67,13 +67,6 @@ ID_manager.read()
 aei_path = "*.aei"
 aei_files = sorted(glob.glob(aei_path))
 
-for aei_f in aei_files:
-
-fn = 'info.out'
-f = open(fn)
-lines = f.readlines()
-f.close()
-
 """ For each .aei file, get only the value for 'a' """
 
 # store each a_over_time in dictionary corresponding to IDs (or orbital parameters??????)
