@@ -12,6 +12,8 @@ from matplotlib import pyplot as plot
 import glob
 import pickle
 
+# Make plotting optional in the future????
+
 """
 This program converts the collision + ejection data from info.out
 into a table to match the format from the Holman/Wiegert paper
@@ -145,8 +147,8 @@ sm_axis_table = np.zeros((num_a, N)) + 99.9
 for name in names:
     name_split = name.split('_')
 
-    M_str = id_split[0]
-    S_str = id_split[1]
+    M_str = name_split[0]
+    S_str = name_split[1]
 
     Mi = m_deg_array.index(int(M_str[1:]))
     Si = sm_array.index(int(S_str[1:]))
@@ -158,8 +160,8 @@ for name in names:
     #print this_time
 
     if len(this_a_over_time) > 0:
-        plot_fn = "%s_sm-axis_evolution.png" % ID_str # Note: ID_name = e.g. A2.1
-        plot_title = "%s, Planet: %s" % (ID_str, ID_name)
+        plot_fn = "%s_sm-axis_evolution.png" % name # Note: ID_name = e.g. A2.1
+        plot_title = "Planet: %s" % (name)
 
         plot.plot(this_time, this_a_over_time)
         plot.plot(this_time, this_a_over_time, 'ro')
@@ -215,7 +217,7 @@ for i,y in enumerate(sm_array):
     row = str_y.center(width) + '|'
     for median_sma in sm_axis_table[i]:
         s = ""
-        if mean_sma == 0.0:
+        if median_sma == 0.0:
             s = "QUICK".center(width)
         else:
             s = str("%.2f" % median_sma).center(width)
@@ -229,8 +231,8 @@ if len(sys.argv) > 1:
 else:
    f = open("sm-axes.t", 'w')
     
-header = "Directory: %s\n" % o.integration_dir
-f.write(header)
+#header = "Directory: %s\n" % o.integration_dir
+#f.write(header)
 print rowzero
 f.write(rowzero + "\n")
 print dash_row
