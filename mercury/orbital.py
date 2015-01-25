@@ -207,7 +207,7 @@ def orbit(peri,e,I,omega,Omega,M,mu):
 
 """#############################################################################"""
 
-def KeplerEquation(mean_anom,e):
+def KeplerEquation(mean_anom, e):
   """
   Finds the eccentric anomaly 'ecc_anom' 
   given the mean anomaly 'mean_anom' and eccentricity 'e'
