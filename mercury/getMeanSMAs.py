@@ -11,7 +11,6 @@ from matplotlib import pyplot as plot
 
 import glob
 import pickle
-from id import ID_Manager
 
 """
 This program converts the collision + ejection data from info.out
@@ -25,6 +24,8 @@ This program averages 'a' over time, neglecting the first term and final term fo
 
 Certain parameters must be specified near the top of the file.
 UPDATE: These are called from an "info.p" file to make things easier.
+
+NOTE: This version uses the old format without IDs!!!!!
 """
 
 def isFloat(value):
@@ -55,17 +56,6 @@ a_b = o.a_bin
 a_min = o.min_sma
 a_max = o.max_sma
 
-
-""" Read IDs from ids.p file (ids map to the old format of M#a_S_ """
-
-pickle_fn = "ids.p"
-pickle_f = open(pickle_fn, "rb")
-id_dict = pickle.load(pickle_f)
-pickle_f.close()
-
-ID_manager = ID_Manager()
-ID_manager.read()
-
 """ Collect *.aei files (output data from e.exe = mercury output parser) """
 
 aei_path = "*_*.aei"  # because the formt is M#_S#.aei
@@ -83,12 +73,12 @@ if len(aei_files) == 0:
 """ For each .aei file, get only the value for 'a' """
 
 # store each a_over_time in dictionary corresponding to IDs (or orbital parameters??????)
-id_names = []
+names = []
 a_dict = {}
 t_dict = {}
 for aei_fn in aei_files:
-    id_name = aei_fn[:aei_fn.rfind(".")] # for 'ID_0000.aei', return 'ID_0000'
-    id_names.append(id_name)
+    name = aei_fn[:aei_fn.rfind(".")] # for 'ID_0000.aei', return 'ID_0000'
+    names.append(name)
 
     a_over_time = []
     time_array = []
@@ -113,10 +103,10 @@ for aei_fn in aei_files:
        time_array = time_array[1:-1]
        a_over_time = a_over_time[1:-1] # get rid of first and last entry IFF eject after 5000 years
 
-    a_dict[id_name] = a_over_time
-    t_dict[id_name] = time_array
+    a_dict[name] = a_over_time
+    t_dict[name] = time_array
 
-print "ID_names:", id_names
+print "Names:", names
         
 """ 
 Format: ID_#%04d collided with the central body at #c.#d years
@@ -143,29 +133,27 @@ if num_a > 1:
     step_size = a_range / (num_a - 1) 
     for i in xrange(num_a):
         semi_major_axes[i] += (i * step_size)
-        semi_major_axes[i] = round(semi_major_axes[i], o.sep_sma) # <<--- Note the change from x.x to x.xx!!
+        semi_major_axes[i] = round(semi_major_axes[i], 1) # <<--- Note the change from x.x to x.xx!!
 
-sm_array = [round(x, o.sep_sma) for x in semi_major_axes] # <<<<---- ARCHAIC use!!!!!!
+sm_array = [int(10 * x) for x in semi_major_axes] # <<<<---- ARCHAIC use!!!!!!
 #print sm_array # S Names
 
 sm_axis_table = np.zeros((num_a, N)) + 99.9
 
 # (1) Calculate Mean SMAs, (2) Plot Them, and (3) Parse Them Into Table
 
-for ID_str in id_names:
-    ID_name = id_dict[ID_str]
-    id_split = ID_name.split('_')
+for name in names:
+    name_split = name.split('_')
 
-    A_str = id_split[0]
-    M_str = id_split[1]
+    M_str = id_split[0]
+    S_str = id_split[1]
 
-    Ai = sm_array.index(float(A_str[1:]))
     Mi = m_deg_array.index(int(M_str[1:]))
+    Si = sm_array.index(int(S_str[1:]))
 
-    this_a_over_time = a_dict[ID_str] # retrieve
-    this_time = t_dict[ID_str] # retrieve
+    this_a_over_time = a_dict[name] # retrieve
+    this_time = t_dict[name] # retrieve
 
-    #print ID_str, ID_name
     #print this_a_over_time
     #print this_time
 
@@ -221,16 +209,16 @@ for x in m_deg_array:
     
 rows = []
 count = 0
-str_y_base = "%.0" + ("%d" % o.sep_sma) + "f"
+str_y_base = "%.01f"
 for i,y in enumerate(sm_array):
     str_y = str_y_base % y
     row = str_y.center(width) + '|'
-    for mean_sma in sm_axis_table[i]:
+    for median_sma in sm_axis_table[i]:
         s = ""
         if mean_sma == 0.0:
             s = "QUICK".center(width)
         else:
-            s = str("%.2f" % mean_sma).center(width)
+            s = str("%.2f" % median_sma).center(width)
         row += s
     rows.append(row)
     
