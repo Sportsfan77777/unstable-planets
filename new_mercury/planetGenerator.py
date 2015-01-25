@@ -402,7 +402,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
 
     """ (5) Plot Orbits (Optional) """
     
-def execute_mercury(directory, hold = True):
+def execute_mercury(directory, hold = True, output = True):
     """ 
     executes the mercury script in a specified directory
     corresponding to an integration
@@ -415,7 +415,10 @@ def execute_mercury(directory, hold = True):
     #mercury = directory + "/m.exe" # mercury executable
     mercury = "./m.exe" # mercury executable
     os.chdir(directory)
-    subprocess.call(mercury) 
+    subprocess.call(mercury)
+
+    element_output = "./e.exe"
+    subprocess.call(element_output)
     
     # Return to start directory
     if hold:

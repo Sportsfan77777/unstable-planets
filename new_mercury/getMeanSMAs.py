@@ -182,8 +182,6 @@ for x in m_deg_array:
     rowzero += (str(x)).center(width)
     dash_row += dash
     
-stable_array = np.zeros(len(sm_array))
-    
 rows = []
 count = 0
 str_y_base = "%.0" + ("%d" % o.sep_sma) + "f"
@@ -193,22 +191,20 @@ for i,y in enumerate(sm_array):
     stable = True
     for mean_sma in sm_axis_table[i]:
         s = ""
-        if ej == 0.0:
-            s = "IMMEDIATE".center(width)
+        if  == 0.0:
+            s = "QUICK".center(width)
         else:
-            s = str(ej).center(width)
+            s = str(mean_sma).center(width)
             stable = False
         row += s
     rows.append(row)
-    if stable == True:
-       stable_array[i] = 1
     
 # Write Pretty Print to File
 if len(sys.argv) > 1:
    fn = sys.argv[1]  # write to a file (if provided)
    f = open(fn, 'a')
 else:
-   f = open("eject.t", 'w')
+   f = open("sm-axes.t", 'w')
     
 header = "Directory: %s\n" % o.integration_dir
 f.write(header)
@@ -221,12 +217,6 @@ for r_str in rows:
     f.write(r_str + "\n")
 
 f.close()
-   
-# Write Stability Array
-
-pickle_f = open("stability.p", "wb")
-pickle.dump(stable_array, pickle_f)
-pickle_f.close()
 
 # Write SM-Axes Array
 
@@ -243,7 +233,8 @@ pickle_f.close()
 # Write Ejection Table!
 # (i) as table
 pickle_f = open("table_of_final_sm-axes.p", "wb")
-pickle.dump(ejectionTable, pickle_f)
+pickle.dump(sm_axis_table, pickle_f)
 pickle_f.close()
 
 # (ii) as array of dictionaries
+
