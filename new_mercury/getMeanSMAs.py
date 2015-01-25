@@ -154,9 +154,9 @@ for ID_str in id_names:
     this_a_over_time = a_dict[ID_str] # retrieve
     this_time = t_dict[ID_str] # retrieve
 
-    print ID_str, ID_name
-    print this_a_over_time
-    print this_time
+    #print ID_str, ID_name
+    #print this_a_over_time
+    #print this_time
 
     if len(this_a_over_time) > 0:
         plot_fn = "%s_sm-axis_evolution.png" % ID_str # Note: ID_name = e.g. A2.1
@@ -177,8 +177,8 @@ for ID_str in id_names:
         outliers = True
         tmp_a_over_time = this_a_over_time[:] 
         while outliers:
-            print median_sma, three_sigma
-            print
+            #print median_sma, three_sigma
+            #print
 
             prev_tmp = tmp_a_over_time[:]
             tmp_a_over_time = []
