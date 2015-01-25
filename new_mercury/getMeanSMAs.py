@@ -2,6 +2,8 @@ import numpy as np
 import string
 import math
 import sys
+import os
+import subprocess
 
 import matplotlib
 matplotlib.use('Agg')
@@ -68,6 +70,15 @@ ID_manager.read()
 
 aei_path = "ID*.aei"
 aei_files = sorted(glob.glob(aei_path))
+
+if len(aei_files) == 0:
+    # ./e.exe has not been run yet, so run it
+    element_output = "./e.exe"
+    subprocess.call(element_output)
+
+    # Re-try globglob
+    aei_files = sorted(glob.glob(aei_path))
+
 
 """ For each .aei file, get only the value for 'a' """
 
