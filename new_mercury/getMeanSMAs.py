@@ -3,6 +3,8 @@ import string
 import math
 import sys
 
+import matplotlib
+matplotlib.use('Agg')
 from matplotlib import pyplot as plot
 
 import glob
@@ -64,7 +66,7 @@ ID_manager.read()
 
 """ Collect *.aei files (output data from e.exe = mercury output parser) """
 
-aei_path = "*.aei"
+aei_path = "ID*.aei"
 aei_files = sorted(glob.glob(aei_path))
 
 """ For each .aei file, get only the value for 'a' """
@@ -86,14 +88,15 @@ for aei_fn in aei_files:
     for line in lines:
         split_line = line.split()
 
-        maybe_useable_time = split_line[0]
-        maybe_a = split_line[1]
+        if len(split_line) > 2:
+            maybe_useable_time = split_line[0]
+            maybe_a = split_line[1]
 
-        if isFloat(maybe_a):
-            a = maybe_a
-            t = maybe_useable_time
-            a_over_time.append(a)
-            time_array.append(t)
+            if isFloat(maybe_a):
+                a = float(maybe_a)
+                t = float(maybe_useable_time)
+                a_over_time.append(a)
+                time_array.append(t)
 
     if len(a_over_time) >= 5:
        time_array = time_array[1:-1]
@@ -101,6 +104,8 @@ for aei_fn in aei_files:
 
     a_dict[id_name] = a_over_time
     t_dict[id_name] = time_array
+
+print "ID_names:", id_names
         
 """ 
 Format: ID_#%04d collided with the central body at #c.#d years
@@ -132,7 +137,7 @@ if num_a > 1:
 sm_array = [round(x, o.sep_sma) for x in semi_major_axes] # <<<<---- ARCHAIC use!!!!!!
 #print sm_array # S Names
 
-sm_axis = np.zeros((num_a, N)) + 99.9
+sm_axis_table = np.zeros((num_a, N)) + 99.9
 
 # (1) Calculate Mean SMAs, (2) Plot Them, and (3) Parse Them Into Table
 
@@ -149,8 +154,12 @@ for ID_str in id_names:
     this_a_over_time = a_dict[ID_str] # retrieve
     this_time = t_dict[ID_str] # retrieve
 
+    print ID_str, ID_name
+    print this_a_over_time
+    print this_time
+
     if len(this_a_over_time) > 0:
-        plot_fn = "%s_sm-axis_evolution.py" % ID_str # Note: ID_name = e.g. A2.1
+        plot_fn = "%s_sm-axis_evolution.png" % ID_str # Note: ID_name = e.g. A2.1
         plot_title = "%s, Planet: %s" % (ID_str, ID_name)
 
         plot.plot(this_time, this_a_over_time)
@@ -161,7 +170,31 @@ for ID_str in id_names:
         plot.ylabel("semimajor axis (in scaled AU)")
 
         plot.savefig(plot_fn)
-        sm_axis_table[Ai][Mi] = mean_sma
+
+        median_sma = np.median(this_a_over_time)
+        three_sigma = 3.0 * np.std(this_a_over_time)
+
+        outliers = True
+        tmp_a_over_time = this_a_over_time[:] 
+        while outliers:
+            print median_sma, three_sigma
+            print
+
+            prev_tmp = tmp_a_over_time[:]
+            tmp_a_over_time = []
+            for a in prev_tmp:
+                if abs(a - median_sma) > three_sigma:
+                    pass
+                else:
+                    tmp_a_over_time.append(a)
+
+            median_sma = np.median(tmp_a_over_time)
+            three_sigma = 3.0 * np.std(tmp_a_over_time)
+
+            if len(tmp_a_over_time) == len(prev_tmp):
+                outliers = False
+
+        sm_axis_table[Ai][Mi] = median_sma   ### <<<<<----- Currently working on this
 
 # Simple Print  
 #print ejectionTable, '\n'
@@ -181,14 +214,12 @@ str_y_base = "%.0" + ("%d" % o.sep_sma) + "f"
 for i,y in enumerate(sm_array):
     str_y = str_y_base % y
     row = str_y.center(width) + '|'
-    stable = True
     for mean_sma in sm_axis_table[i]:
         s = ""
-        if  == 0.0:
+        if mean_sma == 0.0:
             s = "QUICK".center(width)
         else:
-            s = str(mean_sma).center(width)
-            stable = False
+            s = str("%.2f" % mean_sma).center(width)
         row += s
     rows.append(row)
     
