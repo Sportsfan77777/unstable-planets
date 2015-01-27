@@ -164,13 +164,17 @@ for name in names:
         plot_title = "Planet: %s" % (name)
 
         plot.plot(this_time, this_a_over_time)
-        plot.plot(this_time, this_a_over_time, 'ro')
+        #plot.plot(this_time, this_a_over_time, 'ro')
 
         plot.title(plot_title)
         plot.xlabel("time (in years)")
         plot.ylabel("semimajor axis (in scaled AU)")
 
+        plot.ylim(0.0, 8.0) # in AU
+
         plot.savefig(plot_fn)
+
+        plot.cla() # CLEAR FIGURE!
 
         median_sma = np.median(this_a_over_time)
         three_sigma = 3.0 * np.std(this_a_over_time)
@@ -211,9 +215,9 @@ for x in m_deg_array:
     
 rows = []
 count = 0
-str_y_base = "%.01f"
+str_y_base = "%.1f"
 for i,y in enumerate(sm_array):
-    str_y = str_y_base % y
+    str_y = str_y_base % (y / 10.0)
     row = str_y.center(width) + '|'
     for median_sma in sm_axis_table[i]:
         s = ""
