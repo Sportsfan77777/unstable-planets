@@ -9,10 +9,10 @@ import planetGenerator as PG
 
 
 if __name__ in ('__main__'):
-    mass_ratios = [0.1 * x for x in range(1,6)]
-    #mass_ratios = [0.1]
+    #mass_ratios = [0.1 * x for x in range(1,6)]
+    mass_ratios = [0.1]
     eccentricities = [0.1 * x for x in range(8)]
-    eccentricities = [0.7]
+    eccentricities = [0.6]
     
     min_a = 3.7
     

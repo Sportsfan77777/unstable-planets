@@ -12,6 +12,11 @@ from matplotlib import pyplot as plot
 import glob
 import pickle
 
+from structures import *
+from avatar import *
+
+from mercury import G as BigG
+
 # Make plotting optional in the future????
 
 """
@@ -58,6 +63,8 @@ a_b = o.a_bin
 a_min = o.min_sma
 a_max = o.max_sma
 
+mu = BigG * o.mass_bin # Used in calculate orbital elements from cartesian output files
+
 """ Collect *.aei files (output data from e.exe = mercury output parser) """
 
 aei_path = "*_*.aei"  # because the formt is M#_S#.aei
@@ -92,14 +99,22 @@ for aei_fn in aei_files:
         split_line = line.split()
 
         if len(split_line) > 2:
-            maybe_useable_time = split_line[0]
-            maybe_a = split_line[1]
+            t = split_line[0]
 
-            if isFloat(maybe_a):
-                a = float(maybe_a)
-                t = float(maybe_useable_time)
-                a_over_time.append(a)
-                time_array.append(t)
+            x = split_line[1]
+            y = split_line[2]
+            z = split_line[3]
+            position = Position(x, y, z)
+
+            u = split_line[4]
+            v = split_line[5]
+            w = split_line[6]
+            velocity = Velocity(u, v, w)
+
+            a = calculate_a(position, velocity, mu)
+
+            a_over_time.append(a)
+            time_array.append(t)
 
     if len(a_over_time) >= 5:
        time_array = time_array[1:-1]

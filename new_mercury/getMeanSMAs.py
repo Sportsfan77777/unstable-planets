@@ -107,7 +107,7 @@ for aei_fn in aei_files:
         split_line = line.split()
 
         if len(split_line) > 6:
-            maybe_useable_time = split_line[0]
+            t = split_line[0]
 
             x = split_line[1]
             y = split_line[2]
