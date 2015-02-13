@@ -11,7 +11,12 @@ from matplotlib import pyplot as plot
 
 import glob
 import pickle
+
 from id import ID_Manager
+from structures import *
+from avatar import *
+
+from mercury import G as BigG
 
 """
 This program converts the collision + ejection data from info.out
@@ -55,6 +60,7 @@ a_b = o.a_bin
 a_min = o.min_sma
 a_max = o.max_sma
 
+mu = BigG * o.mass_bin # Used in calculate orbital elements from cartesian output files
 
 """ Read IDs from ids.p file (ids map to the old format of M#a_S_ """
 
@@ -79,8 +85,9 @@ if len(aei_files) == 0:
     # Re-try globglob
     aei_files = sorted(glob.glob(aei_path))
 
+""" For each .aei file, get all the xyz,uvw and convert to a """
 
-""" For each .aei file, get only the value for 'a' """
+############# BARYCENTRIC FORMAT!!!!!!!! (because Jacobi thing doesn't work...) ##########
 
 # store each a_over_time in dictionary corresponding to IDs (or orbital parameters??????)
 id_names = []
@@ -99,15 +106,23 @@ for aei_fn in aei_files:
     for line in lines:
         split_line = line.split()
 
-        if len(split_line) > 2:
+        if len(split_line) > 6:
             maybe_useable_time = split_line[0]
-            maybe_a = split_line[1]
 
-            if isFloat(maybe_a):
-                a = float(maybe_a)
-                t = float(maybe_useable_time)
-                a_over_time.append(a)
-                time_array.append(t)
+            x = split_line[1]
+            y = split_line[2]
+            z = split_line[3]
+            position = Position(x, y, z)
+
+            u = split_line[4]
+            v = split_line[5]
+            w = split_line[6]
+            velocity = Velocity(u, v, w)
+
+            a = calculate_a(position, velocity, mu)
+
+            a_over_time.append(a)
+            time_array.append(t)
 
     if len(a_over_time) >= 5:
        time_array = time_array[1:-1]
