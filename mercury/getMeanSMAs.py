@@ -104,17 +104,20 @@ for aei_fn in aei_files:
             x = split_line[1]
             y = split_line[2]
             z = split_line[3]
-            position = Position(x, y, z)
 
             u = split_line[4]
             v = split_line[5]
             w = split_line[6]
-            velocity = Velocity(u, v, w)
+            
 
-            a = calculate_a(position, velocity, mu)
+            if (isFloat(x) and isFloat(y) and isFloat(z) and isFloat(u) and isFloat(v) and isFloat(w)):
+               position = Position(float(x), float(y), float(z))
+               velocity = Velocity(float(u), float(v), float(w))
+               
+               a = calculate_a(position, velocity, mu)
 
-            a_over_time.append(a)
-            time_array.append(t)
+               a_over_time.append(a)
+               time_array.append(t)
 
     if len(a_over_time) >= 5:
        time_array = time_array[1:-1]
