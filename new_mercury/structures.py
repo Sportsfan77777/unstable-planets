@@ -94,8 +94,13 @@ class Vector():
 
     def norm_sq(self, override = False):
         if self._size == 3 or override:
-            x = self._vector
-            return x.dot(x)
+            x = self._vector[:]
+            #self.pretty_print()
+            sum_x = 0
+            for entry in x:
+                sum_x += (entry * entry)
+            #return x.dot(x) # <---- doesn't work for old version of python that exo2a has
+            return sum_x
         else:
             return -1
 

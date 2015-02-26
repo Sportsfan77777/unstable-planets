@@ -57,6 +57,7 @@ def KeplerEquation(mean_anom, e):
     Finds the eccentric anomaly 'ecc_anom' 
     given the mean anomaly 'mean_anom' and eccentricity 'e'
     """
+    """
     while (np.abs(mean_anom) > 2.0*np.pi):
     mean_anom-=2.0*np.pi*np.sign(mean_anom)
     if (mean_anom < 0.0): mean_anom = 2*np.pi + mean_anom
@@ -95,6 +96,8 @@ def KeplerEquation(mean_anom, e):
     iter+=1      
 
     return ecc_anom % (2*np.pi)
+    """
+    pass
 
 def HyperbolicKeplerEquation(mean_anom,e):
     """
@@ -104,7 +107,7 @@ def HyperbolicKeplerEquation(mean_anom,e):
     #while (np.abs(mean_anom) > 2.0*np.pi):
     #  mean_anom-=2.0*np.pi*np.sign(mean_anom)
     #if (np.abs(mean_anom) > np.pi): mean_anom-=2.0*np.pi*np.sign(mean_anom)
-
+    """
     if (mean_anom > 0):
     hyp_anom = np.log(mean_anom/np.e + 1.8)
     else:
@@ -139,6 +142,8 @@ def HyperbolicKeplerEquation(mean_anom,e):
     iter+=1
       
     return hyp_anom
+    """
+    pass
 
 def ParabolicKeplerEquation(mean_anom): #jerome cardan's method
     """

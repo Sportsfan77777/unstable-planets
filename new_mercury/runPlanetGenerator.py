@@ -18,9 +18,9 @@ if __name__ in ('__main__'):
     zero = round(float(sys.argv[1]), 0)
     inc = sys.argv[2]
     
-    ecc_pl = round(float(sys.argv[3]), 2)
-    ecc_sc = round(100.0 * ecc_pl, 0)
-    dir_name = "ecc%02d" % ecc_sc
+    #ecc_pl = round(float(sys.argv[3]), 2)
+    #ecc_sc = round(100.0 * ecc_pl, 0)
+    #dir_name = "ecc%02d" % ecc_sc
     
     inclinations = [round(float(inc), 1)]
     

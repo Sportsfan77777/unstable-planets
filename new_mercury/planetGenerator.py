@@ -538,7 +538,7 @@ def new_option_parser():
                     dest="time", type="int", default = 10000000,
                     help="duration of simulation (in days) [%default]")
   result.add_option("--plot_orb",
-                    dest="plot_orb", type="int", default = 0,
+                    dest="plot_orb", type="int", default = 1,
                     help="plot orbits (0 or 1) [%default]")
   result.add_option("--plot_bary",
                     dest="plot_bary", type="int", default = 0,

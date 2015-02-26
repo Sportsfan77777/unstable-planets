@@ -56,7 +56,7 @@ def calculate_W(elements, angular_momentum):
                           negate * h.get('hy') / h.length() / np.sin(elements.get('i')))
 
 def calculate_node(elements, angular_momentum):
-    return calculate_W(elements, angular_momentum):
+    return calculate_W(elements, angular_momentum)
 
 def calculate_w(elements, position, velocity, angular_momentum, positive = True):
     """ 
@@ -64,13 +64,14 @@ def calculate_w(elements, position, velocity, angular_momentum, positive = True)
     Requires elements: 'a', 'inc', 'node'
     Optional parameter: 'positive' ensures 0 < w < 2*pi
     """
+    """
     if ((elements.get('i') > 1.e-3) and (elements.get('i') < np.pi-1.0e-3)):
         sinw_plus_f = position.get('z') / position.length() / np.sin(elements.get('i'))
         
-        cosw_plus_f = 1.0 / np.cos(elements.get('node')) * 
-                      ( position.get('x') / position.length() + 
-                        np.sin(elements.get('node')) * sinw_plus_f * np.cos(elements.get('i') )
-                                      
+        cosw_plus_f = 1.0 / np.cos(elements.get('node')) \
+                        * ( position.get('x') / position.length() \
+                        + np.sin(elements.get('node')) * sinw_plus_f * np.cos(elements.get('i') )
+
         argw_plus_true_anom = np.arctan2(sinw_plus_f, cosw_plus_f)
     else:
         argw_plus_true_anom = np.cos(elements.get('i')) * np.arctan2(position.get('y'), position.get('x'))
@@ -83,6 +84,8 @@ def calculate_w(elements, position, velocity, angular_momentum, positive = True)
         argw += 2.0 * np.pi
 
     return argw
+    """
+    pass
 
 def calculate_argw(elements, position, velocity, angular_momentum):
     return calculate_w(elements, position, velocity, angular_momentum)
@@ -91,6 +94,7 @@ def calculate_M(elements, position, velocity, angular_momentum):
     """ 
     6th, M (mean anomaly)
     Requires elements: 'a', 'ecc'
+    """
     """
     true_anom = calculate_true_anom(elements, position, velocity, angular_momentum)
 
@@ -113,6 +117,8 @@ def calculate_M(elements, position, velocity, angular_momentum):
             
         mn_anom = 0.0 - hyp_anom + elements.get('ecc') * np.sinh(hyp_anom)
         return mn_anom
+    """
+    pass
 
 def calculate_mean_anom():
     return calculate_M(elements, position, velocity, angular_momentum)
