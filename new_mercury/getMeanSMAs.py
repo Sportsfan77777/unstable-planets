@@ -106,30 +106,37 @@ for aei_fn in aei_files:
     for line in lines:
         split_line = line.split()
 
-        if len(split_line) > 6:
+        if len(split_line) > 2:
             t = split_line[0]
 
             x = split_line[1]
             y = split_line[2]
             z = split_line[3]
-            position = Position(x, y, z)
 
             u = split_line[4]
             v = split_line[5]
             w = split_line[6]
-            velocity = Velocity(u, v, w)
+            
 
-            a = calculate_a(position, velocity, mu)
+            if (isFloat(x) and isFloat(y) and isFloat(z) and isFloat(u) and isFloat(v) and isFloat(w)):
+               position = Position(float(x), float(y), float(z))
+               velocity = Velocity(float(u), float(v), float(w))
 
-            a_over_time.append(a)
-            time_array.append(t)
+               a = calculate_a(position, velocity, mu)
+
+               a_over_time.append(a)
+               time_array.append(t)
 
     if len(a_over_time) >= 5:
-       time_array = time_array[1:-1]
-       a_over_time = a_over_time[1:-1] # get rid of first and last entry IFF eject after 5000 years
+       time_array = time_array[:-1]
+       a_over_time = a_over_time[:-1] # get rid of last entry IFF eject after 5000 years
 
     a_dict[id_name] = a_over_time
     t_dict[id_name] = time_array
+
+    # Save a_over_time and time_array
+    save_fn_a = "%s_a.npy" % id_name
+    save_fn_t = "%s_t.npy" % id_name
 
 print "ID_names:", id_names
         
