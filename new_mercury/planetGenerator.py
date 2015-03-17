@@ -233,8 +233,8 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     sm_axis_array = [s for (m,s,i,e) in gather]
     inc_array = [i  for (m,s,i,e) in gather]
     ecc_array = [e for (m,s,i,e) in gather]
-    omega_array = np.ones(total_planets) * argw_bin
-    OMEGA_array = np.ones(total_planets) * node_bin
+    omega_array = np.ones(total_planets) * argw_bin * np.pi / 180.0
+    OMEGA_array = np.ones(total_planets) * node_bin * np.pi / 180.0
 
 
     # For Naming the Planets (by m, s, i, e) (or really 100*m, 100*s, 100*i, 100*e)
@@ -292,12 +292,7 @@ def grid_planets(num_M = 8, num_a = 10, num_i = 1, num_e = 1,
     """ (4) Write Mercury Files """
     
     if integration_dir is None:
-       u_bin_str = int(round(u_bin * 10, 0))
-       e_bin_str = int(round(e_bin * 10, 0))
-       i_bin_str = int(round(np.pi * min_inc / 180.0, 0))
-       M_bin_str = int(round(mean_anom_bin, 0))
-       integration_dir = "%s_u%d_e%d_i%03d_M%03d" % (dir, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
-   
+       integration_dir = get_integration_dir(dir, u_bin, e_bin, min_inc, mean_anom_bin)
 
     mercury.write_mercury_files(x_b, y_b, z_b, vx_b, vy_b, vz_b, mass_b,
                                 np.zeros(2),np.zeros(2),np.zeros(2),
@@ -535,10 +530,10 @@ def new_option_parser():
                     dest="i_bin", type="float", default = 0.0,
                     help="inclination of the binary stars in deg [%default]")
   result.add_option("--time",
-                    dest="time", type="int", default = 10000000,
-                    help="duration of simulation (in days) [%default]")
+                    dest="time", type="int", default = 100000,
+                    help="duration of simulation (in years) [%default]")
   result.add_option("--plot_orb",
-                    dest="plot_orb", type="int", default = 1,
+                    dest="plot_orb", type="int", default = 0,
                     help="plot orbits (0 or 1) [%default]")
   result.add_option("--plot_bary",
                     dest="plot_bary", type="int", default = 0,
@@ -549,13 +544,9 @@ def new_option_parser():
                     
 def execute_main(o, arguments):
    """ main method for command line call or pseudo_main call """
-   
-   u_bin_str = int(round(o.u_bin * 10, 0))
-   e_bin_str = int(round(o.e_bin * 10, 0))
-   i_bin_str = int(round(o.min_inc, 0))
-   M_bin_str = int(round(o.mean_anom_bin, 0))
-   integration_dir = "%s_u%d_e%d_i%03d_M%03d" % (o.dir, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
-   o.integration_dir = integration_dir
+
+   o.time *= 365 # Convert from years to days
+   o.integration_dir = get_integration_dir(o.dir, o.u_bin, o.e_bin, o.min_inc, o.mean_anom_bin)
    
    if o.e_bin == 0:
       o.e_bin = 0.0001 # not zero, just really small
@@ -571,7 +562,7 @@ def execute_main(o, arguments):
                 mean_anom_bin = o.mean_anom_bin, i_bin = o.i_bin,
                 simtime = o.time,
                 plot_orbits = o.plot_orb, plot_barycentric = o.plot_bary,
-                integration_dir = integration_dir)
+                integration_dir = o.integration_dir)
                 
    print "Done Gridding Planets"
    time_b = time.time()
@@ -580,31 +571,42 @@ def execute_main(o, arguments):
    
    print "Saving Parameters to Pickle File"
    # Write 'o' dictionary into file (using Pickle)
-   pickle_f = open(integration_dir + "/info.p", "wb")
+   pickle_f = open(o.integration_dir + "/info.p", "wb")
    pickle.dump(o, pickle_f)
    pickle_f.close()
    print "Done Saving Parameters to Pickle File"
    
    print "Running Mercury"
    time_a = time.time()
-   execute_mercury(integration_dir)
+   execute_mercury(o.integration_dir)
    print "Done Running Mercury"
    time_b = time.time()   
    print "Time: %.4f" % (time_b - time_a)
    
    print "Getting Ejection Data"
    time_a = time.time()
-   getEjectionData(integration_dir)
+   getEjectionData(o.integration_dir)
    print "Done Getting Ejection Data"
    time_b = time.time()   
    print "Time: %.4f" % (time_b - time_a)
 
    print "Getting Output Data"
    time_a = time.time()
-   getMeanSMAs(integration_dir)
+   getMeanSMAs(o.integration_dir) # Switch this to call saveAvatarOutput (which calls ./e.exe and the deletes the .aei files)
    print "Done Getting Output Data"
    time_b = time.time()   
    print "Time: %.4f" % (time_b - time_a)
+
+def get_integration_dir(dir_name, u_bin, e_bin, min_inc, mean_anom_bin):
+   """ generate name of integration directory from simulation parameters """
+   u_bin_str = int(round(u_bin * 100, 0))
+   e_bin_str = int(round(e_bin * 100, 0))
+   i_bin_str = int(round(min_inc, 0))
+   M_bin_str = int(round(mean_anom_bin, 0))
+   integration_dir = "%s_u%02d_e%02d_i%03d_M%03d" % (dir_name, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
+
+   return integration_dir
+   
 
 def pseudo_main(args):
    """ option parser input not from the command line """

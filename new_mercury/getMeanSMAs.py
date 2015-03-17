@@ -97,46 +97,53 @@ for aei_fn in aei_files:
     id_name = aei_fn[:aei_fn.rfind(".")] # for 'ID_0000.aei', return 'ID_0000'
     id_names.append(id_name)
 
-    a_over_time = []
-    time_array = []
+    save_fn_a = "%s_a.npy" % id_name
+    save_fn_t = "%s_t.npy" % id_name
 
-    f = open(aei_fn)
-    lines = f.readlines()
+    if os.path.exists(save_fn_a) and os.path.exists(save_fn_t):
+        # This has already been done!
+        a_over_time = np.load(save_fn_a)
+        time_array = np.load(save_fn_t)
+    else:
+        a_over_time = []
+        time_array = []
 
-    for line in lines:
-        split_line = line.split()
+        f = open(aei_fn)
+        lines = f.readlines()
 
-        if len(split_line) > 2:
-            t = split_line[0]
+        for line in lines:
+            split_line = line.split()
 
-            x = split_line[1]
-            y = split_line[2]
-            z = split_line[3]
+            if len(split_line) > 2:
+                t = split_line[0]
 
-            u = split_line[4]
-            v = split_line[5]
-            w = split_line[6]
-            
+                x = split_line[1]
+                y = split_line[2]
+                z = split_line[3]
 
-            if (isFloat(x) and isFloat(y) and isFloat(z) and isFloat(u) and isFloat(v) and isFloat(w)):
-               position = Position(float(x), float(y), float(z))
-               velocity = Velocity(float(u), float(v), float(w))
+                u = split_line[4]
+                v = split_line[5]
+                w = split_line[6]
+                
 
-               a = calculate_a(position, velocity, mu)
+                if (isFloat(x) and isFloat(y) and isFloat(z) and isFloat(u) and isFloat(v) and isFloat(w)):
+                   position = Position(float(x), float(y), float(z))
+                   velocity = Velocity(float(u), float(v), float(w))
 
-               a_over_time.append(a)
-               time_array.append(t)
+                   a = calculate_a(position, velocity, mu)
 
-    if len(a_over_time) >= 5:
-       time_array = time_array[:-1]
-       a_over_time = a_over_time[:-1] # get rid of last entry IFF eject after 5000 years
+                   a_over_time.append(a)
+                   time_array.append(t)
+
+        if len(a_over_time) >= 5:
+           time_array = time_array[:-1]
+           a_over_time = a_over_time[:-1] # get rid of last entry IFF eject after 5000 years
 
     a_dict[id_name] = a_over_time
     t_dict[id_name] = time_array
 
-    # Save a_over_time and time_array
-    save_fn_a = "%s_a.npy" % id_name
-    save_fn_t = "%s_t.npy" % id_name
+        # Save a_over_time and time_array
+    
 
 print "ID_names:", id_names
         

@@ -10,7 +10,7 @@ import os
 import subprocess
 
 import matplotlib
-#matplotlib.use('Agg')
+matplotlib.use('Agg') # for ssh-ed computers
 from matplotlib import pyplot as plot
 
 import glob
@@ -42,6 +42,10 @@ sm_axis_table = sm_axis_table.reshape(sm_axis_table.size)
 ejectionTable = ejectionTable.reshape(ejectionTable.size)
 
 x = sm_axis_table[:]
+for i,z in enumerate(ejectionTable):
+	if z == 99.9:
+		ejectionTable[i] = 10 ** 5.95 # Set non-ejectees apart
+
 y = [1000*i for i in ejectionTable]
 
 # Set Up Plot

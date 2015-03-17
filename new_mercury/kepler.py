@@ -57,93 +57,82 @@ def KeplerEquation(mean_anom, e):
     Finds the eccentric anomaly 'ecc_anom' 
     given the mean anomaly 'mean_anom' and eccentricity 'e'
     """
-    """
     while (np.abs(mean_anom) > 2.0*np.pi):
-    mean_anom-=2.0*np.pi*np.sign(mean_anom)
+        mean_anom-=2.0*np.pi*np.sign(mean_anom)
     if (mean_anom < 0.0): mean_anom = 2*np.pi + mean_anom
 
     k = 0.85
     ecc_anom = mean_anom + np.sign(np.sin(mean_anom))* k * e
     #ecc_anom = mean_anom
     if (e > 0.8):
-    ecc_anom = np.pi
-
+        ecc_anom = np.pi
+        
     abstol,reltol = 1.0e-8, 1.0e-8
     iter = 0
     while(True):
-    f = ecc_anom -e * np.sin(ecc_anom) - mean_anom
-    fprime = 1.0 - e * np.cos(ecc_anom)
-    fprime2 = e * np.sin(ecc_anom)
-    fprime3 = e * np.cos(ecc_anom)
-    delta1 = - f / fprime
-    delta2 = - f /(fprime + 0.5 * delta1 * fprime2)
-    delta3 = - f /(fprime + 0.5 * delta2 * fprime2 + 0.16666666666 * delta2**2 * fprime3) 
+        f = ecc_anom -e * np.sin(ecc_anom) - mean_anom
+        fprime = 1.0 - e * np.cos(ecc_anom)
+        fprime2 = e * np.sin(ecc_anom)
+        fprime3 = e * np.cos(ecc_anom)
+        delta1 = - f / fprime
+        delta2 = - f /(fprime + 0.5 * delta1 * fprime2)
+        delta3 = - f /(fprime + 0.5 * delta2 * fprime2 + 0.16666666666 * delta2**2 * fprime3) 
 
-    if (delta3 == 0): break
+        if (delta3 == 0): break
+        
+        if (np.abs(ecc_anom) > 0.0):
+          abserr,relerr = np.abs(delta3),np.abs(delta3)/np.abs(ecc_anom)
+        else:
+          abserr,relerr = np.abs(delta3),1.0e40
 
-    if (np.abs(ecc_anom) > 0.0):
-      abserr,relerr = np.abs(delta3),np.abs(delta3)/np.abs(ecc_anom)
-    else:
-      abserr,relerr = np.abs(delta3),1.0e40
-
-    ecc_anom+=delta3
-    #print iter,ecc_anom,e,delta3
-
-    if (np.abs(ecc_anom) > abstol/reltol):
-      if (abserr < abstol): break
-    else:
-      if (relerr < reltol): break
-    iter+=1      
+        ecc_anom+=delta3
+        #print iter,ecc_anom,e,delta3
+        
+        if (np.abs(ecc_anom) > abstol/reltol):
+          if (abserr < abstol): break
+        else:
+          if (relerr < reltol): break
+        iter+=1      
 
     return ecc_anom % (2*np.pi)
-    """
-    pass
 
 def HyperbolicKeplerEquation(mean_anom,e):
     """
     Finds the hyperbolic anomaly 'hyp_anom' 
     given the mean anomaly 'mean_anom' and eccentricity 'e'
     """
-    #while (np.abs(mean_anom) > 2.0*np.pi):
-    #  mean_anom-=2.0*np.pi*np.sign(mean_anom)
-    #if (np.abs(mean_anom) > np.pi): mean_anom-=2.0*np.pi*np.sign(mean_anom)
-    """
     if (mean_anom > 0):
-    hyp_anom = np.log(mean_anom/np.e + 1.8)
+        hyp_anom = np.log(mean_anom/np.e + 1.8)
     else:
-    hyp_anom = -np.log(np.abs(mean_anom)/np.e + 1.8)
+        hyp_anom = -np.log(np.abs(mean_anom)/np.e + 1.8)
     abstol,reltol = 1.0e-10, 1.0e-10
     iter = 0
     while(True):
-    f = e * np.sinh(hyp_anom) - hyp_anom - mean_anom
-    fprime =  e * np.cosh(hyp_anom) - 1.0
-    fprime2 = e * np.sinh(hyp_anom) 
-    fprime3 = e * np.cosh(hyp_anom)
-    delta1 = - f / fprime
-    delta2 = - f /(fprime + 0.5 * delta1 * fprime2)
-    delta3 = - f /(fprime + 0.5 * delta2 * fprime2 + 0.16666666666 * delta2**2 * fprime3) 
+        f = e * np.sinh(hyp_anom) - hyp_anom - mean_anom
+        fprime =  e * np.cosh(hyp_anom) - 1.0
+        fprime2 = e * np.sinh(hyp_anom) 
+        fprime3 = e * np.cosh(hyp_anom)
+        delta1 = - f / fprime
+        delta2 = - f /(fprime + 0.5 * delta1 * fprime2)
+        delta3 = - f /(fprime + 0.5 * delta2 * fprime2 + 0.16666666666 * delta2**2 * fprime3) 
 
-    if (delta3 == 0): break
-
-    if (np.abs(hyp_anom) > 0.0):
-      abserr,relerr = np.abs(delta3),np.abs(delta3)/np.abs(hyp_anom)
-    else:
-      abserr,relerr = np.abs(delta3),1.0e40
-      
-    hyp_anom+=delta3
-    #print iter,hyp_anom,e,delta3
-
-    if (np.abs(hyp_anom) > abstol/reltol):
-      if (abserr < abstol): 
-      	break
-    else:
-      if (relerr < reltol): 
-      	break
-    iter+=1
-      
+        if (delta3 == 0): break
+        
+        if (np.abs(hyp_anom) > 0.0):
+          abserr,relerr = np.abs(delta3),np.abs(delta3)/np.abs(hyp_anom)
+        else:
+          abserr,relerr = np.abs(delta3),1.0e40
+          
+        hyp_anom+=delta3
+        #print iter,hyp_anom,e,delta3
+        
+        if (np.abs(hyp_anom) > abstol/reltol):
+          if (abserr < abstol): break
+        else:
+          if (relerr < reltol): break
+        iter+=1
+          
     return hyp_anom
-    """
-    pass
 
 def ParabolicKeplerEquation(mean_anom): #jerome cardan's method
     """

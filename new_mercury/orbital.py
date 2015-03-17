@@ -2,8 +2,8 @@ import numpy as np
 #from pylab import *   ??????
 
 from structures import *
-import avatar
-import amon
+from avatar import *
+from amon import *
 
 #set unit system
 UnitMass_in_g            = 1.98892e33 # solar mass

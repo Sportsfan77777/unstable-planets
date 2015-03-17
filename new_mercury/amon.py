@@ -23,3 +23,7 @@ def get_rotation_matrix(elements):
     d_matrix[2][1] = np.cos(elements.get('w')) * np.sin(elements.get('i'))
 
     return d_matrix
+
+
+def calculate_flat_position(elements, mu):
+    
