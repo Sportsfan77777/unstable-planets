@@ -10,7 +10,7 @@ import sys
 G=2.959122082855911E-4
 
 #template_path = "/Users/Sportsfan77777/Documents/Fall 2014/ASTRO 4940/planets/tests/template/"
-template_path = "/home/astrosun/mhammer/tests/template/"
+template_path = "/data/mhammer/tests/template/"
 
 def mkdir(directory, safety = False, multiple = False):
   """ make a directory if it doesn't exist, with options for protection and sub-directories """
@@ -42,8 +42,12 @@ def mkdir_integration(directory, template_dir = None):
        
     dst_path = directory
     
-    print " *** Copying Directory *** "
-    shutil.copytree(src_path, dst_path)
+    
+    if os.path.exists(dst_path):
+        print " *** Directory Already Exists *** "
+    else:
+        print " *** Copying Directory *** "
+        shutil.copytree(src_path, dst_path)
     
     #mkdir(directory, safety = True) # Note: multiple = False (only one directory created)
     
