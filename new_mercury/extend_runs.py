@@ -1,16 +1,61 @@
 """
-Take all directories (in the future, a subset of directories)
+Take all directories (or, a subset of directories)
 and extend the duration of each run.
 
 Then, execute ./m.exe in the appropriate directory to continue each run
 """
 
+import sys
 import os
+import subprocess
+import shutil
 import glob
 
+new_num_years = 1000000
+if len(sys.argv) > 1:
+	new_num_years = sys.argv[1]
 
-# Get all directories
-dir_path = "sim_u*_e*_i*_M*"
+new_num_days = str(int(round(365 * new_num_years, 0)))
+
+# Get all directories (or a subset of directories)
+dir_path = "sim_u*_e05_i*_M*"
 directories = sorted(glob.glob(dir_path))
 
-print directories
+# Re-write time in param.dmp
+for directory in directories:
+	os.chdir(directory)
+
+	fn = "param.dmp"
+	fn_tmp = "param-tmp.dmp"
+
+	wr_lines = []
+
+	# Open File
+	with open(fn, 'r') as f:
+		for line in f:
+			# If line contains "stop time"
+			if "stop time" in line:
+				split_dot = line.split(".")[0]
+				days_str = split_dot.split(" ")[-1] # Old Number of Days
+
+				replacement = line.replace(days_str, new_num_days)
+				wr_lines.append(replacement)
+			else:
+				if len(line) > 1:
+				    wr_lines.append(line)
+
+	# Open TMP File
+	with open(fn_tmp, 'w') as f:
+		for line in wr_lines:
+			f.write(line)
+
+	shutil.move(fn_tmp, fn)
+	os.chdir("../")
+
+# Run ./m.exe in background
+for directory in directories:
+	os.chdir(directory)
+	command = ["./m.exe"]
+	subprocess.Popen(command, stdout=subprocess.PIPE)
+	os.chdir("../")
+
