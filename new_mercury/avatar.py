@@ -97,7 +97,7 @@ def calculate_M(elements, position, velocity, angular_momentum):
         tan_ecc_anom = 2.0 * tan_ecc_anom_2 / (1.0 - tan_ecc_anom_2**2)
         cos_ecc_anom = (1.0 - position.length() / elements.get('a') ) / elements.get('ecc')
 
-        ecc_anom = np.arctan2(tanecc_anom * cosecc_anom, cosecc_anom)
+        ecc_anom = np.arctan2(tan_ecc_anom * cos_ecc_anom, cos_ecc_anom)
 
         if (ecc_anom < 0): 
             ecc_anom = 2.0 * np.pi + ecc_anom
@@ -128,7 +128,7 @@ def calculate_true_anom(elements, position, velocity, angular_momentum, positive
     r_dot = negate * np.sqrt(abs(velocity.norm_sq() - h.norm_sq() / position.norm_sq()))
 
     true_anom = np.arctan2(elements.get('a') * (1.0 - elements.get('ecc') **2) / h.length() / elements.get('ecc') * r_dot,
-                             1.0 / ecc * (elements.get('a') / position.length() * (1.0 - elements.get('ecc')**2) - 1.0))
+                             1.0 / elements.get('ecc') * (elements.get('a') / position.length() * (1.0 - elements.get('ecc')**2) - 1.0))
 
     true_anom %= 2 * np.pi
     if positive and true_anom < 0.0: 

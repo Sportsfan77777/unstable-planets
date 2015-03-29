@@ -211,6 +211,8 @@ for ID_str in id_names:
 
         plot.savefig(plot_fn)
 
+        initial_sma = 
+
         median_sma = np.median(this_a_over_time)
         three_sigma = 3.0 * np.std(this_a_over_time)
 

@@ -12,10 +12,6 @@ import sys
 import os
 import subprocess
 
-import matplotlib
-matplotlib.use('Agg')
-from matplotlib import pyplot as plot
-
 import glob
 import pickle
 
@@ -91,7 +87,7 @@ for aei_fn in aei_files:
     elements_over_time = []
     time_array = []
 
-    if os.path.exists(save_fn_a) and os.path.exists(save_fn_t):
+    if os.path.exists(save_fn):
         # This has already been done!
         pass
     else:
@@ -129,6 +125,8 @@ for aei_fn in aei_files:
                    elements.set_w(calculate_w(elements, position, velocity, angular_momentum))
                    elements.set_M(calculate_M(elements, position, velocity, angular_momentum))
 
+                   #elements.pretty_print()
+
                    elements_over_time.append(elements)
                    time_array.append(t)
 
@@ -149,6 +147,6 @@ for aei_fn in aei_files:
         np.save(save_fn, final_array)
 
 # Delete .aei files
-#for aei_file in aei_files:
-#	rm_command = ['rm', aei_file]
-#	subprocess.call(rm_command)
+for aei_file in aei_files:
+	rm_command = ['rm', aei_file]
+	subprocess.call(rm_command)

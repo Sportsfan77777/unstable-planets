@@ -21,7 +21,7 @@ class Vector():
         print self._vector
         if len(self._dict) and pretty:
             for key in sorted(self._dict):
-                print "| %s = %s |" % (key, str(self._dict[key])),
+                print "| %s = %s |" % (key, self.get(key)),
             print
 
     def size(self):
@@ -31,14 +31,13 @@ class Vector():
         """ set specific entry (call by number) """
         if arg_num < 0:
             raise Exception("Must specify arg_num!")
-        if arg_num >= len(self._vector):
-            new_vector = np.zeros(arg_num, dtype = np.ndarray)
+        if arg_num + 1 >= len(self._vector):
+            new_vector = np.zeros(arg_num + 1, dtype = np.ndarray)
             new_vector[:len(self._vector)] = self._vector[:]
             self._vector = new_vector
             self._size = len(self._vector)
 
-        # Check if arg_num is a named_arg
-
+        # Check if arg_num is a named_arg (not implemented yet. not necessary if auxiliary is used)
         self._vector[arg_num] = entry
 
     def get(self, name_or_num):
@@ -65,7 +64,7 @@ class Vector():
 
     def dot(self, vector, ret_type = None):
         """ dot product """
-        if len(self._vector) == len(vector):
+        if len(self._vector) == vector.length():
             if ret_type:
                 return ret_type(self._vector.dot(vector))
             else:
@@ -188,7 +187,7 @@ class OrbitalElements(Vector):
     def __init__(self, *args):
         if len(args) == 6:
             (a, e, i, argw, node, mean_anom) = args
-            Vector.__init__(a, e, i, argw, node, mean_anom)
+            Vector.__init__(self, a, e, i, argw, node, mean_anom)
             self.name_arg('a', 0)
             self.name_arg('sma', 0)
 
@@ -207,7 +206,7 @@ class OrbitalElements(Vector):
             self.name_arg('M', 5)
             self.name_arg('mean_anom', 5)
         else:
-            Vector.__init__()
+            Vector.__init__(self)
 
     def set_a(self, a):
         self.set(a, arg_num = 0)
