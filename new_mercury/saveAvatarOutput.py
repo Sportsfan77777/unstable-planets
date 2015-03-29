@@ -149,6 +149,6 @@ for aei_fn in aei_files:
         np.save(save_fn, final_array)
 
 # Delete .aei files
-for aei_file in aei_files:
-	rm_command = ['rm', aei_file]
-	subprocess.call(rm_command)
+#for aei_file in aei_files:
+#	rm_command = ['rm', aei_file]
+#	subprocess.call(rm_command)

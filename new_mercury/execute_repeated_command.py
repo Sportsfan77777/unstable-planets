@@ -24,7 +24,7 @@ directories = sorted(glob.glob(dir_path))
 for directory in directories:
 	os.chdir(directory)
 
-	command = [] # <<<<<<<<<<<<<<<<<<========================== Insert command here ============
+	command = ["python", "getEjectionData.py"] # <<<<<<<<<<<<<<<<<<========================== Insert command here ============
 	if background:
 		subprocess.Popen(command, stdout=subprocess.PIPE)
 	else:
