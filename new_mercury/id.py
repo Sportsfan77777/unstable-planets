@@ -41,6 +41,9 @@ class ID_Manager():
         str_id = str(id_i)
         return self._id_dict[str_id]
 
+    def get_all_ids(self):
+        return self._id_dict.keys
+
     def read(self, directory = None, name = None):
         if name:
             fn_ids = "ids_%s.p" % name
