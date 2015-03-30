@@ -438,7 +438,26 @@ def getEjectionData(directory, hold = True):
     if hold:
        os.chdir("../")
 
-def getMeanSMAs(directory, hold = True):
+def getAvatarOutput(directory, hold = True):
+    """ 
+    gets orbital element output in a specified directory
+    corresponding to an integration
+    
+    hold: whether to return to initial directory
+    
+    if hold == True:
+       Requires the directory is one level below
+    """
+    
+    avatar = ["python", "saveAvatarOutput.py"]
+    os.chdir(directory)
+    subprocess.call(avatar)
+    
+    # Return to start directory
+    if hold:
+       os.chdir("../")
+
+def getMedianSMAs(directory, hold = True):
     """ 
     gets Mean SMAs in a specified directory
     corresponding to an integration
@@ -449,14 +468,13 @@ def getMeanSMAs(directory, hold = True):
        Requires the directory is one level below
     """
     
-    meanSMAs = ["python", "getMeanSMAs.py"]
+    meanSMAs = ["python", "getMedianSMAs.py"]
     os.chdir(directory)
     subprocess.call(meanSMAs) 
     
     # Return to start directory
     if hold:
        os.chdir("../")
-
     
     
 def new_option_parser():
@@ -592,7 +610,8 @@ def execute_main(o, arguments):
 
    print "Getting Output Data"
    time_a = time.time()
-   getMeanSMAs(o.integration_dir) # Switch this to call saveAvatarOutput (which calls ./e.exe and the deletes the .aei files)
+   getAvatarOutput(o.integration_dir)
+   getMedianSMAs(o.integration_dir)
    print "Done Getting Output Data"
    time_b = time.time()   
    print "Time: %.4f" % (time_b - time_a)
@@ -606,7 +625,6 @@ def get_integration_dir(dir_name, u_bin, e_bin, min_inc, mean_anom_bin):
    integration_dir = "%s_u%02d_e%02d_i%03d_M%03d" % (dir_name, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
 
    return integration_dir
-   
 
 def pseudo_main(args):
    """ option parser input not from the command line """
