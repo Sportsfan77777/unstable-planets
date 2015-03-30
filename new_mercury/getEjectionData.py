@@ -15,6 +15,8 @@ Certain parameters must be specified near the top of the file.
 Outputs showing a '+' indicate the test mass survived.
 """
 
+STABLE_VALUE = 999888.9
+
 """ Read from info.p file (parameters) """
 
 pickle_fn = "info.p"
@@ -95,7 +97,7 @@ if num_a > 1:
 sm_array = [round(x, o.sep_sma) for x in semi_major_axes] # <<<<---- ARCHAIC use!!!!!!
 #print sm_array # S Names
 
-ejectionTable = np.zeros((num_a, N)) + 99.9
+ejectionTable = np.zeros((num_a, N)) + STABLE_VALUE
 
 # Parse Ejection Data Into Table
 
@@ -148,7 +150,7 @@ for i,y in enumerate(sm_array):
     stable = True
     for ej in ejectionTable[i]:
         s = ""
-        if ej == 99.9:
+        if ej == 999888.9:
             s = "+".center(width)
         else:
             s = str(ej).center(width)
