@@ -125,10 +125,40 @@ def contour_plot(cr_sma_table, ecc, mass_ratios = mass_ratios, ecc_s = ecc_s):
 def line_graph(cr_sma_table, ecc, mass_ratios = mass_ratios, ecc_s = ecc_s):
      """ make a set of line graphs from the table (use globals for axes) """
 
-     for k, mass_ratio in enumerate(mass_ratios):
-        x = inc_s[:]
-        y = cr_sma_table[:,k]
-        plot.plot(x, y, c = colors[k], marker = markers[k])
+     # Something to do with legend placement
 
-     plot.show()
+     title = "Critical Semimajor Axes at Eccentricity %0.02f" % (ecc)
+     plot.title(title)
+
+     plot.xlabel("Inclination i")
+     plot.ylabel("Critical Semimajor Axis a_crit\n(in units of binary separation) ")
+
+     x = inc_s[:]
+     plot.xlim(inc_s[0] - 5, inc_s[-1] + 5)
+
+     cr_sma_list = cr_sma_table.reshape(np.size(cr_sma_table))
+
+     plot.ylim(min(cr_sma_list) - 0.1, max(cr_sma_list) + 0.1)
+
+     plots = []
+     labels = []
+
+     for k, mass_ratio in enumerate(mass_ratios):
+        label = "u = %0.02f" % mass_ratio
+
+        y = [yk + 0.002 * (k - len(mass_ratios) / 2) for yk in cr_sma_table[:,k]]
+        this_plot, = plot.plot(x, y, c = colors[k], marker = markers[k], linewidth = 2, markersize = 7)
+
+        plots.append(this_plot)
+        labels.append(label)
+
+     plot.legend(plots, labels, bbox_to_anchor=(1.05, 1), loc=2, borderaxespad=0.0)
+
+     #plot.show()
+     ecc_val = 100 * ecc
+     fn = "line_graph_ecc%02d.png" % (ecc_val) 
+     plot.savefig(fn, bbox_inches='tight')
+
+     # Clear Figure
+     plot.clf()
 
