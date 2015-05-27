@@ -115,7 +115,7 @@ for line in data:
     M_str = id_split[1]
 
     eject_val = int(float(nxt_split[-2])) / 1000.0 # This is #c (in kyr)
-    eject = round(eject_val, 1)
+    eject = round(eject_val, 2)
     
     #print M_str[1:], A_str[1:], Eject
     
@@ -131,7 +131,7 @@ for line in data:
 #print ejectionTable, '\n'
 
 # Pretty Print
-width = 7
+width = 9
 rowzero = phase_str[phase].center(width) + '|'
 dash = '-' * width
 dash_row = dash
@@ -153,7 +153,7 @@ for i,y in enumerate(sm_array):
         if ej == 999888.9:
             s = "+".center(width)
         else:
-            s = str(ej).center(width)
+            s = ("%.2f" % ej).center(width)
             stable = False
         row += s
     rows.append(row)
@@ -167,8 +167,9 @@ if len(sys.argv) > 1:
 else:
    f = open("eject.t", 'w')
     
-header = "Directory: %s\n" % o.integration_dir
-f.write(header)
+header = "Directory: %s" % o.integration_dir
+print header
+f.write(header + "\n")
 print rowzero
 f.write(rowzero + "\n")
 print dash_row
