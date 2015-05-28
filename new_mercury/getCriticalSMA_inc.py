@@ -9,35 +9,35 @@ import sys
 
 dir_base = "sim"
 mass_ratios = [0.1 * x for x in range(1,6)]
-ecc_s = [0.1 * x for x in range(8)]
-inc_s = [10.0 * x for x in range(1,10)]
-Ms = [0, 180]
+ecc_s = [0.05 * x for x in range(15)]
+inc_s = [10.0 * x for x in range(1,8)]
+Ms = [0, 0]
 
 # Make 2-D table at each i
 # Make 1-D table for each (u,e)
 
-critical_sma_table = np.zeros((len(ecc_s), len(mass_ratios)), dtype = float)
-critical_sma = np.zeros(len(ecc_s) * len(mass_ratios), dtype = float)
+critical_sma_tables = np.zeros((len(inc_s), len(ecc_s), len(mass_ratios)), dtype = float)
+critical_sma_list = np.zeros((len(inc_s), (len(ecc_s) * len(mass_ratios))), dtype = float)
 
-for inc in inc_s:
+for ith, inc in enumerate(inc_s):
     for j,ecc in enumerate(ecc_s):
         for k,u in enumerate(mass_ratios):
             sm_axes = []
             stable_arrays = [[],[]]
             for i,M in enumerate(Ms):
-                u_bin_str = int(round(u * 10, 0))
-                e_bin_str = int(round(ecc * 10, 0))
+                u_bin_str = int(round(u * 100, 0))
+                e_bin_str = int(round(ecc * 100, 0))
                 i_bin_str = int(round(inc, 0))
                 M_bin_str = int(round(M, 0))
-                stable_file = "%s_u%d_e%d_i%03d_M%03d/stability.p" % (dir_base, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
-                stable_file = "%s_u%d_e%d_i%03d_M%03d/sm_axes.p" % (dir_base, u_bin_str, e_bin_str, i_bin_str, M_bin_str) 
+                stable_file = "storage/%s_u%02d_e%02d_i%03d_M%03d/stability.p" % (dir_base, u_bin_str, e_bin_str, i_bin_str, M_bin_str)
+                sm_axes_fn = "storage/%s_u%02d_e%02d_i%03d_M%03d/sm_axes.p" % (dir_base, u_bin_str, e_bin_str, i_bin_str, M_bin_str) 
                 
                 stability_f = open(stable_file, "rb")
-                stable_arrays[i] = stability_f.load()
+                stable_arrays[i] = pickle.load(stability_f)
                 stability_f.close()
                 
-            sm_axes_f = open(stable_file, "rb")
-            sm_axes = sm_axes_f.load()
+            sm_axes_f = open(sm_axes_fn, "rb")
+            sm_axes = pickle.load(sm_axes_f)
             sm_axes_f.close()
             
             crit_sma = sm_axes[-1] + 900.0
@@ -45,8 +45,8 @@ for inc in inc_s:
                  if s0 and s1:
                      crit_sma = sma
                      break
-            critical_sma_table[j,k] = crit_sma
-            critical_sma[j* len(mass_ratios) + k] = crit_sma
+            critical_sma_tables[ith,j,k] = crit_sma
+            critical_sma_list[ith, j* len(mass_ratios) + k] = crit_sma
             
 # Pickle Files!
 
