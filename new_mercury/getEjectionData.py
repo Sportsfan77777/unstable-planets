@@ -139,7 +139,10 @@ for x in m_deg_array:
     rowzero += (str(x)).center(width)
     dash_row += dash
     
+# Stable Array
 stable_array = np.zeros(len(sm_array))
+# Minimum Ejection Time Array
+min_eject_array = np.zeros(len(sm_array)) + STABLE_VALUE
     
 rows = []
 count = 0
@@ -157,8 +160,13 @@ for i,y in enumerate(sm_array):
             stable = False
         row += s
     rows.append(row)
+    # Mark Stability
     if stable == True:
        stable_array[i] = 1
+    # Find Min Eject Time (for one row back)
+    if (i + 1) < len(sm_array):
+        min_eject_array[i + 1] = min(ejectionTable[i])
+
     
 # Write Pretty Print to File
 if len(sys.argv) > 1:
@@ -179,6 +187,12 @@ for r_str in rows:
     f.write(r_str + "\n")
 
 f.close()
+
+# Write Minimum Ejection Time Array
+
+pickle_f = open("min_ejection_times.p", "wb")
+pickle.dump(min_eject_array, pickle_f)
+pickle_f.close()
    
 # Write Stability Array
 
