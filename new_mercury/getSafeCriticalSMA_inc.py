@@ -10,9 +10,9 @@ import sys
 STABLE_VALUE = 999888.9
 
 dir_base = "sim"
-mass_ratios = [0.1 * x for x in range(1,6)]
+mass_ratios = [0.05 * x for x in range(2,11)]
 ecc_s = [0.05 * x for x in range(15)]
-inc_s = [10.0 * x for x in range(1,8)]
+inc_s = [10.0 * x for x in range(8)]
 Ms = [0, 0]
 
 # Make 2-D table at each i
@@ -53,8 +53,9 @@ for ith, inc in enumerate(inc_s):
             crit_sma = sm_axes[-1] + 900.0
             crit_eject_t = STABLE_VALUE
             found = False
+            check_one = False
             for (sma, s0, s1, min_eject_t) in zip((sm_axes)[::-1], (stable_arrays[0])[::-1], (stable_arrays[1])[::-1], (min_eject)[::-1]):
-                 if not found:
+                if not found:
                     if s0 and s1:
                         crit_sma = sma
                         crit_eject_t = min_eject_t
@@ -64,7 +65,12 @@ for ith, inc in enumerate(inc_s):
                         next_eject_t = min_eject_t
                         # Choose minimum ejection time of two outermost unstable 'a'
                         crit_eject_t = min(crit_eject_t, next_eject_t)
-                        
+                elif found and not check_one:
+                    # Choose minimum ejection time of two outermost unstable 'a'
+                    check_one = True 
+                    third_eject_t = min_eject_t
+                    crit_eject_t = min(crit_eject_t, third_eject_t)
+
             critical_sma_tables[ith,j,k] = crit_sma
             critical_sma_list[ith, j* len(mass_ratios) + k] = crit_sma
 
