@@ -13,7 +13,7 @@ dir_base = "sim"
 mass_ratios = [0.05 * x for x in range(2,11)]
 ecc_s = [0.05 * x for x in range(15)]
 inc_s = [10.0 * x for x in range(8)]
-Ms = [0, 0]
+Ms = [0, 180]
 
 # Make 2-D table at each i
 # Make 1-D table for each (u,e)
@@ -29,6 +29,7 @@ for ith, inc in enumerate(inc_s):
         for k,u in enumerate(mass_ratios):
             sm_axes = []
             stable_arrays = [[],[]]
+            min_eject = [[],[]]
             for i,M in enumerate(Ms):
                 u_bin_str = int(round(u * 100, 0))
                 e_bin_str = int(round(ecc * 100, 0))
@@ -41,34 +42,34 @@ for ith, inc in enumerate(inc_s):
                 stability_f = open(stable_file, "rb")
                 stable_arrays[i] = pickle.load(stability_f)
                 stability_f.close()
+
+                min_eject_f = open(min_eject_fn, "rb")
+                min_eject[i] = pickle.load(min_eject_f)
+                min_eject_f.close()
                 
             sm_axes_f = open(sm_axes_fn, "rb")
             sm_axes = pickle.load(sm_axes_f)
             sm_axes_f.close()
-
-            min_eject_f = open(min_eject_fn, "rb")
-            min_eject = pickle.load(min_eject_f)
-            min_eject_f.close()
             
             crit_sma = sm_axes[-1] + 900.0
             crit_eject_t = STABLE_VALUE
             found = False
             check_one = False
-            for (sma, s0, s1, min_eject_t) in zip((sm_axes)[::-1], (stable_arrays[0])[::-1], (stable_arrays[1])[::-1], (min_eject)[::-1]):
+            for (sma, s0, s1, min_eject_t0, min_eject_t1) in zip((sm_axes)[::-1], (stable_arrays[0])[::-1], (stable_arrays[1])[::-1], (min_eject[0])[::-1], (min_eject[1])[::-1]):
                 if not found:
                     if s0 and s1:
                         crit_sma = sma
-                        crit_eject_t = min_eject_t
+                        crit_eject_t = min(min_eject_t0, min_eject_t1)
                     else:
                         # outermost unstable sm-axis
                         found = True
-                        next_eject_t = min_eject_t
+                        next_eject_t = min(min_eject_t0, min_eject_t1)
                         # Choose minimum ejection time of two outermost unstable 'a'
                         crit_eject_t = min(crit_eject_t, next_eject_t)
                 elif found and not check_one:
                     # Choose minimum ejection time of two outermost unstable 'a'
                     check_one = True 
-                    third_eject_t = min_eject_t
+                    third_eject_t = min(min_eject_t0, min_eject_t1)
                     crit_eject_t = min(crit_eject_t, third_eject_t)
 
             critical_sma_tables[ith,j,k] = crit_sma
