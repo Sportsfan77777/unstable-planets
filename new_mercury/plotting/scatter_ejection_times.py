@@ -56,8 +56,8 @@ plot.scatter(x, y, color = color, alpha = alpha_val, marker = "o", s = size)
 plot.xlim(min_x, max_x)
 plot.ylim(-20, 400)
 
-plot.xlabel("$a_{st}$ (in units of binary separation)")
-plot.ylabel("Minimum $t_{eject}$ near $a_{st}$ (in units of thousands of binary periods)")
+plot.xlabel("$a_{st} / a_b$")
+plot.ylabel("Minimum $t_{eject} / 10^3 T_b$ near $a_{st}$")
 plot.title("Simulation Times Necessary for Finding $a_{st}$")
 
 plot.savefig("necessarySimulationTimes.png")
@@ -72,8 +72,8 @@ plot.scatter(x, y, color = color, alpha = alpha_val, marker = "o", s = size)
 plot.xlim(min_x, max_x)
 #plot.ylim(0.01, 500)
 
-plot.xlabel("$a_{st}$ (in units of binary separation)")
-plot.ylabel("Minimum $t_{eject}$ near $a_{st}$ (in units of thousands of binary periods)")
+plot.xlabel("$a_{st} / a_b$")
+plot.ylabel("Minimum $t_{eject} / 10^3 T_b$ near $a_{st}$")
 plot.title("Simulation Times Necessary for Finding $a_{st}$")
 
 plot.yscale('log')
