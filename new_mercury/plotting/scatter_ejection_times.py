@@ -57,11 +57,11 @@ plot.xlim(min_x, max_x)
 plot.ylim(-20, 400)
 
 plot.xlabel("$a_{st} / a_b$")
-plot.ylabel("Minimum $t_{eject} / 10^3 T_b$ near $a_{st}$")
+plot.ylabel("Minimum $t_{eject}$ [$10^3 T_b$] near $a_{st}$")
 plot.title("Simulation Times Necessary for Finding $a_{st}$")
 
 plot.savefig("necessarySimulationTimes.png")
-plot.show()
+#plot.show()
 
 plot.cla()
 
@@ -73,14 +73,15 @@ plot.xlim(min_x, max_x)
 #plot.ylim(0.01, 500)
 
 plot.xlabel("$a_{st} / a_b$")
-plot.ylabel("Minimum $t_{eject} / 10^3 T_b$ near $a_{st}$")
+plot.ylabel("Minimum $t_{eject}$ [$10^3 T_b$] near $a_{st}$")
 plot.title("Simulation Times Necessary for Finding $a_{st}$")
 
 plot.yscale('log')
 plot.ylim(0.01, 400)
 plot.savefig("necessarySimulationTimes_log.png")
-plot.show()
+#plot.show()
 
+plot.cla()
 
 # Quantities
 total = len(x)
@@ -90,7 +91,7 @@ less_than_50 = len(y[y < 50])
 less_than_100 = len(y[y < 100])
 less_than_200 = len(y[y < 200])
 
-fraction_50 = str(1.0 * less_than_10 / total)
+fraction_10 = str(1.0 * less_than_10 / total)
 fraction_50 = str(1.0 * less_than_50 / total)
 fraction_100 = str(1.0 * less_than_100 / total)
 fraction_200 = str(1.0 * less_than_200 / total)
@@ -111,5 +112,19 @@ duration_f.write("Fraction of Simulations that need 200 kyr: " + fraction_200 + 
 duration_f.close()
 
 ##### ADD HISTOGRAM #####
+plot.title("Cumulative Distribution of Minimum $t_{eject}$ near $a_{st}$")
+plot.xlabel("Minimum $t_{eject}$ [$10^3 T_b$] near $a_{st}$")
+plot.ylabel("Frequency Fraction")
+
+plot.xlim(-5, 300)
+plot.ylim(0.00, 1.02)
+
+plot.hist(y, bins = range(0, 301, 25), normed = True, cumulative = True, histtype = "bar", color = color)
+
+plot.savefig("necessarySimulationTimesHistogram.png")
+#plot.show()
+
+plot.cla()
+
 
 

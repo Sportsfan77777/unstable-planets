@@ -13,10 +13,8 @@ max_mass_i = 6
 num_ecc = 15
 
 mass_ratios = [round(0.10 * x, 1) for x in range(1, max_mass_i)]
-ecc1_s = [0.05 * x for x in range(num_ecc)]
-ecc2_s = [0.05 * x + 0.025 for x in range(num_ecc - 1)]
-ecc_s = sorted([x for y in [ecc1_s, ecc2_s] for x in y])
-inc_s = [20.0 * x for x in range(1,2)]
+ecc_s = [0.05 * x for x in range(num_ecc)]
+inc_s = [10.0 * x for x in range(8)]
 Ms = [0, 180]
 
 degree_sign= u'\N{DEGREE SIGN}'
@@ -121,7 +119,7 @@ def line_graph(cr_sma_table, inc, mass_ratios = mass_ratios, inc_s = inc_s, apo 
 
      # Something to do with legend placement
 
-     title = "Critical Semimajor Axes at Inclination $i$ = %02d%s" % (inc, degree_sign)
+     title = "Critical Semimajor Axes at Inclination $i$ = %2d%s" % (inc, degree_sign)
      plot.title(title)
 
      plot.xlabel("Eccentricity $e$")
@@ -132,7 +130,7 @@ def line_graph(cr_sma_table, inc, mass_ratios = mass_ratios, inc_s = inc_s, apo 
 
      # Divide by Apocenter
      if apo:
-        plot.ylabel("Critical Semimajor Axis $a_{crit}$ / $a_b (1 + e)$")
+        plot.ylabel("Critical Semimajor Axis a_crit / (1 + e)\n(in units of binary separation) ")
         Q_s = 1 + np.array(ecc_s)
         cr_sma_table = np.transpose(np.transpose(cr_sma_table) / Q_s)
 
@@ -147,7 +145,9 @@ def line_graph(cr_sma_table, inc, mass_ratios = mass_ratios, inc_s = inc_s, apo 
         label = "$\mu$ = %0.02f" % mass_ratio
 
         y = [yk + 0.002 * (k - len(mass_ratios) / 2) for yk in cr_sma_table[:,k]]
-        this_plot, = plot.plot(x, y, c = colors[mass_ratio], marker = markers[mass_ratio], linewidth = 2, markersize = 6)
+        this_plot, = plot.plot(x, y, c = colors[mass_ratio], marker = markers[mass_ratio], linewidth = 2, markersize = 7)
+
+        #pickle.dump(y, open("y_i%02d_u%02d.p" % (inc, 100 * mass_ratio), "wb")) ## <<<==== Only need to do this once
 
         plots.append(this_plot)
         labels.append(label)
