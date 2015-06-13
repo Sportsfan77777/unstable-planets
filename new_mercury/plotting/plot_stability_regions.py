@@ -96,7 +96,7 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
     save_fn = "%s_u%02d_e%02d_%sMap" % (dir, 100 * mu, 100 * ecc, stability_name)
     save_fn += ".%s"
     plot.savefig(save_fn % "png")
-    plot.savefig(save_fn % "eps", format = "eps", dpi = 1000)
+    #plot.savefig(save_fn % "eps", format = "eps", dpi = 1000)
 
 
 if __name__ == "__main__":
