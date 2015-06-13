@@ -16,7 +16,12 @@ this_mu = 0.1
 this_ecc = 0.1
 this_inc_s = [10.0 * x for x in range(8)]
 
-def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir = "sim"):
+def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir = "sim", loose = True):
+    # Choose Type of Stability
+    stability_name = "stability"
+    if loose:
+        stability_name = "looseStability" # used for pickle input and img output
+
     # Assume this range of sm-axes contains actual range
     min_a = 1.5
     max_a = 5.0
@@ -39,7 +44,7 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
 
         for directory in directories:
             sm_axes_fn = directory + "/sm_axes.p"
-            stable_fn = directory + "/stability.p"
+            stable_fn = directory + ("/%s.p" % stability_name)
             info_fn = directory + "/info.p"
 
             sm_axes_fns.append(sm_axes_fn)
@@ -88,7 +93,7 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
     plot.xlim(min_a - delta_a_bin, max_a + delta_a_bin)
     plot.ylim(inc_s[0] - 5, inc_s[-1] + 5)
 
-    save_fn = "%s_u%02d_e%02d_stabilityMap" % (dir, 100 * mu, 100 * ecc)
+    save_fn = "%s_u%02d_e%02d_%sMap" % (dir, 100 * mu, 100 * ecc, stability_name)
     save_fn += ".%s"
     plot.savefig(save_fn % "png")
     plot.savefig(save_fn % "eps", format = "eps", dpi = 1000)
