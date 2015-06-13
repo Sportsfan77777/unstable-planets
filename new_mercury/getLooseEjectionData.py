@@ -166,8 +166,7 @@ for i,y in enumerate(sm_array):
         row += s
     rows.append(row)
     # Mark Stability
-    if stable == True:
-       stable_array[i] = 0.125 * stable_count
+    stable_array[i] = 0.125 * stable_count
     # Find Min Eject Time (for one row back)
     if (i + 1) < len(sm_array):
         min_eject_array[i + 1] = min(ejectionTable[i])
