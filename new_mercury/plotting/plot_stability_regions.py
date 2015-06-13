@@ -45,7 +45,6 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
             sm_axes_fns.append(sm_axes_fn)
             stable_fns.append(stable_fn)
             info_fns.append(info_fn)
-        
 
         # Load Stability into Staggered Stability array than spans sm_axes_base, not sm_axes
         sm_axes = pickle.load(open(sm_axes_fns[0], "rb"))
@@ -55,13 +54,13 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
         stability_one = pickle.load(open(stable_fns[0], "rb"))
         stability_two = pickle.load(open(stable_fns[1], "rb"))
 
-        stability = np.zeros(len(sm_axes_base))
+        stability = np.zeros(len(sm_axes_base)) # Initialize to unstable (arbitrary)
 
         for i, (stable_one, stable_two) in enumerate(zip(stability_one, stability_two)):
             # Limit by max_a (Future: change max_a from the start if this happens)
             if (i + offset) < len(stability):
                 stability[i + offset] = stable_one + stable_two
-                final_i = i + offset
+                final_i = int(round(i + offset, 0))
 
         # Fill in remainder of array
         for j in range(final_i, len(stability)):
@@ -76,7 +75,8 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
     ax = plot.gca()
 
     # Set up bins
-    a_bins = np.linspace(min_a - (0.033 / 2.0), max_a + (0.033 / 2.0), num_a + 2)
+    delta_a_bin = 0.033 / 2.0
+    a_bins = np.linspace(min_a - delta_a_bin, max_a + delta_a_bin, num_a + 1)
     i_bins = np.array([10 * x - 5 for x in range(len(inc_s) + 2)])
     
     p_map = ax.pcolormesh(a_bins, i_bins, full_stability_array, cmap = cmap)
@@ -85,8 +85,8 @@ def plot_stability_regions(mu = this_mu, ecc = this_ecc, inc_s = this_inc_s, dir
     plot.xlabel("$a_p$ / $a_b$", fontsize = 15)
     plot.ylabel("Inclination $i$", fontsize = 15)
 
-    plot.xlim(min_a, max_a)
-    plot.ylim(inc_s[0], inc_s[-1])
+    plot.xlim(min_a - delta_a_bin, max_a + delta_a_bin)
+    plot.ylim(inc_s[0] - 5, inc_s[-1] + 5)
 
     save_fn = "%s_u%02d_e%02d_stabilityMap" % (dir, 100 * mu, 100 * ecc)
     save_fn += ".%s"
