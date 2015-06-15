@@ -94,5 +94,8 @@ plot.savefig(name + ".png", bbox_inches='tight')
 plot.savefig(name + ".eps", format = "eps", dpi = 1000, bbox_inches='tight')
 plot.show()
 
-pickle.dump(x_r, open("xr_plot1.p", 'wb'))
-pickle.dump(y, open("y_plot1.p", 'wb'))
+name = "_plot_for_%s_u%02d_e%02d_i%02d.p" % (o.dir, 100 * u_bin, 100 * e_bin, i_bin)
+
+# Save Arrays for Re-Use in Combined Plots
+pickle.dump(x_r, open("xr" + name, 'wb'))
+pickle.dump(y, open("y" + name, 'wb'))
