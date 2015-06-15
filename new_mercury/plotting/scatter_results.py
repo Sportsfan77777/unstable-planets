@@ -30,6 +30,11 @@ pickle_f = open(pickle_fn, "rb")
 o = pickle.load(pickle_f)
 pickle_f.close()
 
+# Get Parameters from 'o'
+u_bin = o.u_bin
+e_bin = o.e_bin
+i_bin = o.min_inc
+
 # Get Table of Final Semimajor Axes
 pickle_f = open("table_of_final_sm-axes.p", "rb")
 sm_axis_table = pickle.load(pickle_f)
@@ -58,12 +63,15 @@ plot.scatter(x, y)
 
 plot.xlabel("Median Semimajor Axis 'a'\n(in units of binary separation)")
 plot.ylabel("Ejection Time (in years)")
-plot.title("Ejection Times of Planets Around Two Central Stars\nwith (u = 0.20, e = 0.20, i = 20%s)" % degree_sign)
+plot.title("Ejection Times of Planets Around Two Central Stars\nwith (u = %.02f, e = %.02f, i = %2d%s)" % (u_bin, e_bin, i_bin, degree_sign))
 
 plot.xlim(o.min_sma - 0.1, o.max_sma + 0.1)
 plot.yscale('log')
 
-plot.savefig("t_vs_a.png", bbox_inches='tight')
+name = "t_vs_a_for_%s_u%02d_e%02d_i%02d" % (o.dir, 100 * u_bin, 100 * e_bin, i_bin)
+
+plot.savefig(name + ".png", bbox_inches='tight')
+plot.savefig(name + ".eps", format = "eps", dpi = 1000, bbox_inches='tight')
 plot.show()
 
 plot.cla()
@@ -73,14 +81,17 @@ x_r = [i**1.5 for i in sm_axis_table] # resonant thing
 
 plot.xlabel("Orbital Period 'T'\n(in units of binary period)")
 plot.ylabel("Ejection Time (in years)")
-plot.title("Ejection Times of Planets Around Two Central Stars\nwith (u = 0.20, e = 0.20, i = 20%s)" % degree_sign)
+plot.title("Ejection Times of Planets Around Two Central Stars\nwith (u = %.02f, e = %.02f, i = %2d%s)" % (u_bin, e_bin, i_bin, degree_sign))
 
 plot.xlim((o.min_sma - 0.1)**(1.5), (o.max_sma + 0.1)**(1.5))
 plot.yscale('log')
 #plot.scatter(x_r, y, c = colors, cmap = cmap.cool)
 plot.scatter(x_r, y)
 
-plot.savefig("t_vs_T.png", bbox_inches='tight')
+name = "t_vs_T_for_%s_u%02d_e%02d_i%02d" % (o.dir, 100 * u_bin, 100 * e_bin, i_bin)
+
+plot.savefig(name + ".png", bbox_inches='tight')
+plot.savefig(name + ".eps", format = "eps", dpi = 1000, bbox_inches='tight')
 plot.show()
 
 pickle.dump(x_r, open("xr_plot1.p", 'wb'))
