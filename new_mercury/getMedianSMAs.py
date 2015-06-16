@@ -44,6 +44,11 @@ def isFloat(value):
     except ValueError:
       return False
 
+""" Check args for make_plots """
+make_plots = True
+if len(sys.argv) > 1:
+    make_plots = False
+
 """ Read from info.p file (parameters) """
 
 pickle_fn = "info.p"
@@ -139,17 +144,19 @@ for id_name in id_names:
         this_a_over_time = final_array[:, 1]
         this_e_over_time = final_array[:, 2]
 
-        plot_fn = "%s_sm-axis_evolution.png" % id_name # Note: ID_name = e.g. A2.1
-        plot_title = "%s, Planet: %s" % (id_name, planet_name)
+        if make_plots:
+            # de-triggered by supplying an argument to the function call
+            plot_fn = "%s_sm-axis_evolution.png" % id_name # Note: ID_name = e.g. A2.1
+            plot_title = "%s, Planet: %s" % (id_name, planet_name)
 
-        plot.plot(this_time, this_a_over_time)
-        plot.plot(this_time, this_a_over_time, 'ro')
+            plot.plot(this_time, this_a_over_time)
+            plot.plot(this_time, this_a_over_time, 'ro', alpha = 0.15)
 
-        plot.title(plot_title)
-        plot.xlabel("time (in years)")
-        plot.ylabel("semimajor axis (in scaled AU)")
+            plot.title(plot_title)
+            plot.xlabel("time (in years)")
+            plot.ylabel("semimajor axis (in scaled AU)")
 
-        plot.savefig(plot_fn)
+            plot.savefig(plot_fn)
 
         # Filter bad values too far from initial_sma
         initial_sma = float(A_str[1:])
@@ -159,8 +166,8 @@ for id_name in id_names:
         max_sma = initial_sma + 0.5
 
         # Filter according to 0 < 'e' < 1 and min_sma < 'a' < max_sma
-        filtered_a_over_time = this_a_over_time[(this_e_over_time > 1.0) | (this_e_over_time < 1.0)]
-        filtered_a_over_time = filtered_a_over_time[(filtered_a_over_time > min_sma) | (filtered_a_over_time < max_sma)]
+        filtered_a_over_time = this_a_over_time[(this_e_over_time >= 0.0) & (this_e_over_time < 1.0)]
+        filtered_a_over_time = filtered_a_over_time[(filtered_a_over_time >= min_sma) & (filtered_a_over_time <= max_sma)]
 
         median_sma = np.median(filtered_a_over_time)
         sm_axis_table[Ai][Mi] = median_sma   ### <<<<<----- Currently working on this (but it is better now)
@@ -224,25 +231,17 @@ for i,y in enumerate(sm_array):
     if not all_stable:
         filtered_unstable_rows.append(filtered_unstable_row)
     if not all_unstable:
-        filtered_stable_rows.append(filtered_row)
+        filtered_stable_rows.append(filtered_stable_row)
     
-# Write Pretty Print to File
-if len(sys.argv) > 1:
-   fn = sys.argv[1]  # write to a file (if provided)
-   st_fn = "stable_%s" % f_n
-   unst_fn = "unstable_%s" % f_n
-   f = open(fn, 'a')
-   g = open(st_fn, 'a')
-   h = open(unst_fn, 'a')
-else:
-   f = open("sm-axes.t", 'w')
-   g = open("sm-axes_stable.t", 'w')
-   h = open("sm-axes_unstable.t", 'w')
+# Write Pretty Print to Files
+f = open("sm-axes.t", 'w')
+g = open("sm-axes_stable.t", 'w')
+h = open("sm-axes_unstable.t", 'w')
 
 # Unfiltered    
-header = "Directory: %s\n" % o.integration_dir
+header = "Directory: %s" % o.integration_dir
 print header
-f.write(header)
+f.write(header + "\n")
 print rowzero
 f.write(rowzero + "\n")
 print dash_row
@@ -256,9 +255,9 @@ f.close()
 print
 
 # Filtered: Only show planets that survive
-header = "Directory: %s\n" % o.integration_dir
+header = "Directory: %s" % o.integration_dir
 print header
-g.write(header)
+g.write(header + "\n")
 print rowzero
 g.write(rowzero + "\n")
 print dash_row
@@ -272,9 +271,9 @@ g.close()
 print
 
 # Filtered: Only show planets that eject
-header = "Directory: %s\n" % o.integration_dir
+header = "Directory: %s" % o.integration_dir
 print header
-h.write(header)
+h.write(header + "\n")
 print rowzero
 h.write(rowzero + "\n")
 print dash_row
