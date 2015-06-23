@@ -26,6 +26,18 @@ from mercury import G as BigG
 degree_sign= u'\N{DEGREE SIGN}'
 SIM_TIME = 299999 # Simulation Time in Years (really T_b)
 
+# Used to Annotate Plot with a_crit if 'annotate' is selected
+def holman_fit(mass_ratio, ecc):
+    """HW99 fitting formula for the LCO"""
+    a_crit = 1.60 + 5.10 * ecc - 2.22 * ecc**2 \
+             + 4.12 * mass_ratio - 4.27 * mass_ratio * ecc \
+             -5.09 * mass_ratio**2 + 4.61 * mass_ratio**2 * ecc**2
+
+    return a_crit
+
+
+#### BEGIN HERE ####
+
 # Read info.p
 pickle_fn = "info.p"
 pickle_f = open(pickle_fn, "rb")
@@ -51,6 +63,8 @@ pickle_f.close()
 sm_axis_table = sm_axis_table.reshape(sm_axis_table.size)
 ejectionTable = ejectionTable.reshape(ejectionTable.size)
 
+# Re-label Surviving Planets with Ejection Time = SIM_TIME 
+# Also, create ejectee mask and survivor mask
 x = sm_axis_table[:]
 mask = np.zeros(len(ejectionTable))
 crit_sma_i = 0
@@ -64,6 +78,7 @@ for i,z in enumerate(ejectionTable):
 reverse_mask = np.ones(len(ejectionTable))
 reverse_mask -= mask # inverted mask
 
+# Format Ejection Times for Plot
 y = [1000*i for i in ejectionTable]
 #colors = np.linspace(0,1,len(x)) # To color by initial sm-axis to mark incorrect median sm-axis
 
@@ -141,6 +156,24 @@ if (len(sys.argv) > 1):
                                    arrowstyle = "simple, tail_width = 0.1, head_width = 0.7"),
                  verticalalignment = "center", 
                  fontproperties = font2, size = 25, color = "green")
+
+    #### A_CRIT LINE LABEL ####
+    # Plot 'A_CRIT' Line
+    x_crit = holman_fit(u_bin, e_bin)
+    ax1.plot([x_crit, x_crit], [10, 2.4 * SIM_TIME], color = "green", linewidth = 3, linestyle = "dashed")
+
+    # Set 'A_CRIT' Text Height
+    annotate_y_top = 100
+    annotate_y_bottom = 25
+
+    # Set 'A_CRIT' Text Font
+    font3 = font0.copy()
+    font3.set_weight("bold")
+    ax1.annotate("$a_{crit,HW99}$", xy = (x_crit + 0.03, annotate_y_top), xytext = (x_crit + 0.22, annotate_y_bottom),
+                 arrowprops = dict(facecolor = "green", edgecolor = "green",
+                                   arrowstyle = "simple, tail_width = 0.08, head_width = 0.6"),
+                 verticalalignment = "center", 
+                 fontproperties = font3, size = 20, color = "green")
 
 
 
