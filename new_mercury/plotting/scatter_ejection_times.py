@@ -56,14 +56,15 @@ plot.scatter(x, y, color = color, alpha = alpha_val, marker = "o", s = size)
 plot.xlim(min_x, max_x)
 plot.ylim(-20, 400)
 
-fontsize = 15
-plot.xlabel("$a_{st} / a_b$", fontsize = fontsize)
-plot.ylabel("Sufficient Simulation Time [$10^3 T_b$] at $a_{st}$", fontsize = fontsize)
-#plot.title("Simulation Times Sufficient for Finding $a_{st}$")
+fontsize = 17
+plot.xlabel("$a_{st}$ [$a_b$]", fontsize = fontsize)
+plot.ylabel("Required Integration Time [$10^3 T_b$]", fontsize = fontsize)
+#plot.title("Simulation Times Required for Finding $a_{st}$")
 
-plot.savefig("necessarySimulationTimes.png")
-plot.savefig("necessarySimulationTimes.eps", format = "eps", dpi = 1000)
-plot.savefig("necessarySimulationTimes.pdf", format = "pdf", dpi = 1000)
+save_fn = "requiredSimulationTimes"
+plot.savefig(save_fn + ".png")
+plot.savefig(save_fn + ".eps", format = "eps", dpi = 1000)
+plot.savefig(save_fn + ".pdf", format = "pdf", dpi = 1000)
 #plot.show()
 
 plot.cla()
@@ -76,13 +77,13 @@ plot.xlim(min_x, max_x)
 #plot.ylim(0.01, 500)
 
 plot.xlabel("$a_{st} / a_b$", fontsize = fontsize)
-plot.ylabel("Sufficient Simulation Time [$10^3 T_b$] at $a_{st}$", fontsize = fontsize)
+plot.ylabel("Required Integration Time [$10^3 T_b$]", fontsize = fontsize)
 #plot.title("Simulation Times Necessary for Finding $a_{st}$")
 
 plot.yscale('log')
 plot.ylim(0.01, 400)
-plot.savefig("necessarySimulationTimes_log.png")
-plot.savefig("necessarySimulationTimes_log.pdf", format = "pdf", dpi = 1000)
+plot.savefig(save_fn + "_log.png")
+plot.savefig(save_fn + "_log.pdf", format = "pdf", dpi = 1000)
 #plot.show()
 
 plot.cla()
@@ -117,16 +118,16 @@ duration_f.close()
 
 ##### ADD HISTOGRAM #####
 #plot.title("Distribution of Sufficient Simulation Times")
-plot.xlabel("Sufficient Simulation Time [$10^3 T_b$]", fontsize = fontsize)
-plot.ylabel("Fraction of Simulations", fontsize = fontsize)
+plot.xlabel("Required Integration Time [$10^3 T_b$]", fontsize = fontsize)
+plot.ylabel("Fraction of Integrations", fontsize = fontsize)
 
 plot.xlim(-5, 300)
 plot.ylim(0.00, 1.02)
 
 plot.hist(y, bins = range(0, 301, 25), normed = True, cumulative = True, histtype = "bar", color = color)
 
-plot.savefig("necessarySimulationTimesHistogram.png")
-plot.savefig("necessarySimulationTimesHistogram.pdf", format = 'pdf', dpi = 1000)
+plot.savefig(save_fn + "Histogram.png")
+plot.savefig(save_fn + "Histogram.pdf", format = 'pdf', dpi = 1000)
 #plot.show()
 
 plot.cla()
