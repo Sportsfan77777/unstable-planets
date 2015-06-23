@@ -98,7 +98,7 @@ ax1.scatter(np.ma.masked_array(x, reverse_mask), np.ma.masked_array(y, reverse_m
 
 ax1.set_xlabel("Median Semimajor Axis $a$ [$a_b$]", fontsize = fontsize)
 ax1.set_ylabel("Ejection Time [$T_b$]", fontsize = fontsize)
-plot.title("Ejection Times of Planets Around Two Central Stars\nwith ($\mu$ = $%.02f$, $e$ = $%.02f$, $i$ = $%2d^{\circ}$)" % (u_bin, e_bin, i_bin), y = 1.12)
+plot.title("System Parameters: ( $\mu$ = $%.02f$, $e$ = $%.02f$, $i$ = $%2d^{\circ}$)" % (u_bin, e_bin, i_bin), y = 1.1)
 
 ax1.set_xlim(o.min_sma - 0.1, o.max_sma + 0.1)
 ax2.set_ylim(10, 10**(np.ceil(np.log(SIM_TIME)/np.log(10))))
