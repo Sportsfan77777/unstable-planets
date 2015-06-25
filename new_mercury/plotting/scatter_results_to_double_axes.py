@@ -35,6 +35,29 @@ def holman_fit(mass_ratio, ecc):
 
     return a_crit
 
+# Used to plot vertical line at a_st
+def crit_sma(mass_ratio, ecc, inc, crit_type = "safe"):
+    """ dictionary-like calls for the tables of critical sm-axes """
+    mass_ratios = np.array([abs(0.05 * x - mass_ratio) for x in range(2,11)]) # [0.1 - mass_ratio, 0.15 - mass_ratio, ..., 0.5 - mass_ratio]
+    mu_i = np.argmin(mass_ratios) # The selected mass ratio will be '0' after mass_ratio is subtracted from the array
+
+    ecc_s = np.array([abs(0.05 * x - ecc) for x in range(15)])
+    ecc_i = np.argmin(ecc_s)
+
+    inc_s = np.array([abs(10.0 * x - inc) for x in range(10)])
+    inc_i = np.argmin(inc_s)
+
+    # 3 Possibilities (safe = UCO from initial, moving = UCO from median, else = LCO)
+    if crit_type == "safe":
+        crit_type = "safe_"
+    elif crit_type == "moving":
+        crit_type = "moving_safe_"
+    else:
+        crit_type = ""
+
+    safe_crit_sma_table = pickle.load(open("/Users/Sportsfan77777/planets/critical/sim_%scritical_sma_inc_tables.p" % crit_type, "rb"))
+    return safe_crit_sma_table[inc_i, ecc_i, mu_i] # stored as [i = inc, j = ecc, k = mass_ratio]
+
 
 #### BEGIN HERE ####
 
@@ -124,6 +147,9 @@ if (len(sys.argv) > 1):
     print " *** Annotating ***"
 
     ### STABLE LABEL ###
+    #x_st = x[crit_sma_i] # Fake Method
+    x_st = crit_sma(u_bin, e_bin, i_bin) # Real Method
+    print "Critical Sm-Axis:",  x_st
 
     # Set 'Stable' Text Height
     annotate_y = SIM_TIME / 3
@@ -133,7 +159,7 @@ if (len(sys.argv) > 1):
     font = font0.copy()
     font.set_weight("bold")
     font.set_family("Arial Narrow")
-    ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x[crit_sma_i] + 0.05, annotate_y),
+    ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x_st + 0.05, annotate_y),
                  arrowprops = dict(facecolor = "green", edgecolor = "green",
                                    arrowstyle = "simple, tail_width = 0.7, head_width = 1.6"),
                  verticalalignment = "center",
@@ -141,8 +167,8 @@ if (len(sys.argv) > 1):
 
     #### A_ST LINE LABEL ####
     # Plot 'A_ST' Line
-    x_st = x[crit_sma_i] + 0.03
-    ax1.plot([x_st, x_st], [10, 2.4 * SIM_TIME], color = "green", linewidth = 4, linestyle = "-")
+    x_st_line = x_st + 0.03
+    ax1.plot([x_st_line, x_st_line], [10, 2.4 * SIM_TIME], color = "green", linewidth = 4, linestyle = "-")
 
     # Set 'A_ST' Text Height
     annotate_y_top = 1000
@@ -151,7 +177,7 @@ if (len(sys.argv) > 1):
     # Set 'A_ST' Text Font
     font2 = font0.copy()
     font2.set_weight("bold")
-    ax1.annotate("$a_{st}$", xy = (x[crit_sma_i] + 0.06, annotate_y_top), xytext = (x[crit_sma_i] + 0.25, annotate_y_bottom),
+    ax1.annotate("$a_{st}$", xy = (x_st + 0.06, annotate_y_top), xytext = (x_st + 0.25, annotate_y_bottom),
                  arrowprops = dict(facecolor = "green", edgecolor = "green",
                                    arrowstyle = "simple, tail_width = 0.1, head_width = 0.7"),
                  verticalalignment = "center", 
