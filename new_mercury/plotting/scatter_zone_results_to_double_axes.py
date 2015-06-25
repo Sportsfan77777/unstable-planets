@@ -24,7 +24,7 @@ from avatar import *
 from mercury import G as BigG
 
 degree_sign= u'\N{DEGREE SIGN}'
-SIM_TIME = 299999 # Simulation Time in Years (really T_b)
+SIM_TIME = 259999999 # Simulation Time in Years (really T_b)
 
 # Used to Annotate Plot with a_crit if 'annotate' is selected
 def holman_fit(mass_ratio, ecc):
@@ -62,15 +62,19 @@ def crit_sma(mass_ratio, ecc, inc, crit_type = "safe"):
 #### BEGIN HERE ####
 
 # Initialize Arrays
-sm_axis_table = []
-ejectionTable = []
+sm_axis_table = np.array([])
+ejectionTable = np.array([])
 
 # Combine Zones
 zone_directories = glob.glob("zone*/")
+min_sma = 100
+max_sma = 0
 
 for zone in zone_directories:
+    print "Entering Zone", zone
+
     # Read info.p
-    pickle_fn = "info.p"
+    pickle_fn = zone + "/info.p"
     pickle_f = open(pickle_fn, "rb")
     o = pickle.load(pickle_f)
     pickle_f.close()
@@ -80,24 +84,30 @@ for zone in zone_directories:
     e_bin = o.e_bin
     i_bin = o.min_inc
 
+    if o.min_sma < min_sma:
+        min_sma = o.min_sma
+    
+    if o.max_sma > max_sma:
+        max_sma = o.max_sma
+
     # Get Table of Final Semimajor Axes
-    pickle_f = open("table_of_final_sm-axes.p", "rb")
-    sm_axis_table = pickle.load(pickle_f)
+    pickle_f = open(zone + "/table_of_final_sm-axes.p", "rb")
+    sm_axis_table_i = pickle.load(pickle_f)
     pickle_f.close()
 
     # Get Table of Ejection Times
-    pickle_f = open("table_of_ejections.p", "rb")
-    ejectionTable = pickle.load(pickle_f)
+    pickle_f = open(zone + "/table_of_ejections.p", "rb")
+    ejectionTable_i = pickle.load(pickle_f)
     pickle_f.close()
 
     # Reshape Arrays into 1-D (this is only useful for plotting purposes)
-    sm_axis_table_i = np.array(sm_axis_table.reshape(sm_axis_table.size))
-    ejectionTable_i = np.array(ejectionTable.reshape(ejectionTable.size))
+    sm_axis_table_i = np.array(sm_axis_table_i.reshape(sm_axis_table_i.size))
+    ejectionTable_i = np.array(ejectionTable_i.reshape(ejectionTable_i.size))
 
     # Concatenate Into Master Zone Arrays
-    sm_axis_table.concatenate(sm_axis_table, sm_axis_table_i)
-    ejectionTable.concatenate(ejectionTable, ejectionTable_i)
-    
+    sm_axis_table = np.concatenate((sm_axis_table, sm_axis_table_i))
+    ejectionTable = np.concatenate((ejectionTable, ejectionTable_i))
+
 
 # Re-label Surviving Planets with Ejection Time = SIM_TIME 
 # Also, create ejectee mask and survivor mask
@@ -136,13 +146,13 @@ ax1.set_xlabel("Median Semimajor Axis $a$ [$a_b$]", fontsize = fontsize)
 ax1.set_ylabel("Ejection Time [$T_b$]", fontsize = fontsize)
 plot.title("System Parameters: ( $\mu$ = $%.02f$, $e$ = $%.02f$, $i$ = $%2d^{\circ}$)" % (u_bin, e_bin, i_bin), y = 1.1)
 
-ax1.set_xlim(o.min_sma - 0.1, o.max_sma + 0.1)
+ax1.set_xlim(min_sma - 0.1, max_sma + 0.1)
 ax2.set_ylim(10, 10**(np.ceil(np.log(SIM_TIME)/np.log(10))))
 ax1.set_yscale('log')
 
 # Ax2 is the Resonant Axis
-min_r = int(np.ceil((o.min_sma - 0.1)**1.5))
-max_r = int(np.ceil((o.max_sma + 0.1)**1.5))
+min_r = int(np.ceil((min_sma - 0.1)**1.5))
+max_r = int(np.ceil((max_sma + 0.1)**1.5))
 new_tick_locations = [q**(0.66667) for q in np.array(range(min_r, max_r))]
 def resonant_axis_labels(a_s):
     """ set up axis label numbers """
@@ -165,18 +175,18 @@ if (len(sys.argv) > 1):
     print "Critical Sm-Axis:",  x_st
 
     # Set 'Stable' Text Height
-    annotate_y = SIM_TIME / 3
+    #annotate_y = SIM_TIME / 3
 
     # Set 'Stable' Text Font
     font0 = FontProperties()
-    font = font0.copy()
-    font.set_weight("bold")
-    font.set_family("Arial Narrow")
-    ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x_st + 0.05, annotate_y),
-                 arrowprops = dict(facecolor = "green", edgecolor = "green",
-                                   arrowstyle = "simple, tail_width = 0.7, head_width = 1.6"),
-                 verticalalignment = "center",
-                 fontproperties = font, fontsize = 18, color = "green")
+    #font = font0.copy()
+    #font.set_weight("bold")
+    #font.set_family("Arial Narrow")
+    #ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x_st + 0.05, annotate_y),
+    #             arrowprops = dict(facecolor = "green", edgecolor = "green",
+    #                               arrowstyle = "simple, tail_width = 0.7, head_width = 1.6"),
+    #             verticalalignment = "center",
+    #             fontproperties = font, fontsize = 18, color = "green")
 
     #### A_ST LINE LABEL ####
     # Plot 'A_ST' Line
