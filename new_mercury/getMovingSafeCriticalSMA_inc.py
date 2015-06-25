@@ -21,9 +21,6 @@ Ms = [0, 180]
 critical_sma_tables = np.zeros((len(inc_s), len(ecc_s), len(mass_ratios)), dtype = float)
 critical_sma_list = np.zeros((len(inc_s), (len(ecc_s) * len(mass_ratios))), dtype = float)
 
-critical_sma_eject_time_tables = np.zeros((len(inc_s), len(ecc_s), len(mass_ratios)), dtype = float)
-critical_sma_eject_time_list = np.zeros((len(inc_s), (len(ecc_s) * len(mass_ratios))), dtype = float)
-
 for ith, inc in enumerate(inc_s):
     for j,ecc in enumerate(ecc_s):
         for k,u in enumerate(mass_ratios):
@@ -53,7 +50,7 @@ for ith, inc in enumerate(inc_s):
                     else:
                         # Find the ejected planet with the largest median sm-axis (search through M = 0)
                         if median_sma > crit_sma:
-                            crit_sma = median_sma
+                            crit_sma = round(median_sma, 3)
 
             for (e1, e1_a) in zip(eject_table_arrays[1], sma_table_arrays[1]):
                 for (eject_time, median_sma) in zip(e0, e0_a):
@@ -62,7 +59,7 @@ for ith, inc in enumerate(inc_s):
                     else:
                         # Find the ejected planet with the largest median sm-axis (search through M = 180)
                         if median_sma > crit_sma:
-                            crit_sma = median_sma
+                            crit_sma = round(median_sma, 3)
 
             critical_sma_tables[ith,j,k] = crit_sma
             critical_sma_list[ith, j* len(mass_ratios) + k] = crit_sma
@@ -101,15 +98,12 @@ for ith, inc in enumerate(inc_s):
         dash_row += dash
         
     rows = []
-    rows_eject = []
     for j, ecc in enumerate(ecc_s):
         row = (str(ecc)).center(width) + '|'
         row_eject = (str(ecc)).center(width) + '|'
         for k, u in enumerate(mass_ratios):
-            row += (str(critical_sma_tables[ith,j,k])).center(width)
-            row_eject += (str(critical_sma_eject_time_tables[ith,j,k])).center(width)
+            row += ("%.03f" % (critical_sma_tables[ith,j,k])).center(width)
         rows.append(row)
-        rows_eject.append(row_eject)
 
     # File 1: the critical 'a'
         
@@ -129,18 +123,13 @@ for inc in inc_s:
     dash_row += dash
     
 rows = []
-rows_eject = []
 for k, u in enumerate(mass_ratios):
   for j, ecc in enumerate(ecc_s):
     row = ("(u=%.1f, e=%.1f)" % (u, ecc)).center(2*width) + '|'
-    row_eject = ("(u=%.1f, e=%.1f)" % (u, ecc)).center(2*width) + '|'
     for ith, inc in enumerate(inc_s):
         row += str(critical_sma_list[ith, j*len(mass_ratios) + k]).center(width)
-        row_eject += str(critical_sma_eject_time_list[ith, j*len(mass_ratios) + k]).center(width)
     rows.append(row)
-    rows_eject.append(row_eject)
   rows.append(dash_row)
-  rows_eject.append(dash_row)
 
 # File 1: the critical 'a'
         
