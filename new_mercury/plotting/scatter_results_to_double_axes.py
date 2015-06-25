@@ -195,7 +195,7 @@ if (len(sys.argv) > 1):
     # Set 'A_CRIT' Text Font
     font3 = font0.copy()
     font3.set_weight("bold")
-    ax1.annotate("$a_{crit,HW99}$", xy = (x_crit + 0.03, annotate_y_top), xytext = (x_crit + 0.22, annotate_y_bottom),
+    ax1.annotate("$a_{crit,HW99}$", xy = (x_crit + 0.03, annotate_y_top), xytext = (x_st + 0.22, annotate_y_bottom),
                  arrowprops = dict(facecolor = "green", edgecolor = "green",
                                    arrowstyle = "simple, tail_width = 0.08, head_width = 0.6"),
                  verticalalignment = "center", 
