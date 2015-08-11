@@ -65,8 +65,6 @@ for ith, inc in enumerate(inc_s):
             found_unstable = False
             for (sma, s0, s1, min_eject_t0, min_eject_t1) in zip(sm_axes, stable_arrays[0], stable_arrays[1], min_eject[0], min_eject[1]):
                 if not done:
-                    if (ith == 0) and (j == 7):
-                       print u, ":", round(sma,1), s0, s1, length_stable, length_unstable
                     # Verify that stable island is critical sma
                     if found_stable:
                         if s0 and s1:
@@ -81,7 +79,7 @@ for ith, inc in enumerate(inc_s):
                             # End of Island
                             if length_stable > length_unstable:
                                 # Found Critical SMA!
-                                done = True
+                                done = True # I think 'break' should also work here
                                 #print "Done!"
                             else:
                                 # Keep Looking! (This is the next new island!)

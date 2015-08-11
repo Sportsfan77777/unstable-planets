@@ -65,7 +65,6 @@ for ith, inc in enumerate(inc_s):
             found_unstable = False
             for (sma, s0, s1, min_eject_t0, min_eject_t1) in zip(sm_axes, stable_arrays[0], stable_arrays[1], min_eject[0], min_eject[1]):
                 if not done:
-                    print round(sma,1), s0, s1, length_stable, length_unstable
                     # Verify that stable island is critical sma
                     if found_stable:
                         if s0 and s1:
@@ -81,7 +80,7 @@ for ith, inc in enumerate(inc_s):
                             if length_stable > length_unstable:
                                 # Found Critical SMA!
                                 done = True
-                                print "Done!"
+                                #print "Done!"
                             else:
                                 # Keep Looking! (This is the next new island!)
                                 length_stable = 1; length_unstable = 0 
@@ -104,7 +103,7 @@ for ith, inc in enumerate(inc_s):
             critical_sma_eject_time_tables[ith,j,k] = crit_eject_t
             critical_sma_eject_time_list[ith, j* len(mass_ratios) + k] = crit_eject_t
 
-            print
+            #print
             
 # Pickle Files!
 
