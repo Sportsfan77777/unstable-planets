@@ -65,7 +65,8 @@ for ith, inc in enumerate(inc_s):
             found_unstable = False
             for (sma, s0, s1, min_eject_t0, min_eject_t1) in zip(sm_axes, stable_arrays[0], stable_arrays[1], min_eject[0], min_eject[1]):
                 if not done:
-                    print round(sma,1), s0, s1, length_stable, length_unstable
+                    if (ith == 0) and (j == 7):
+                       print u, ":", round(sma,1), s0, s1, length_stable, length_unstable
                     # Verify that stable island is critical sma
                     if found_stable:
                         if s0 and s1:
@@ -81,9 +82,11 @@ for ith, inc in enumerate(inc_s):
                             if length_stable > length_unstable:
                                 # Found Critical SMA!
                                 done = True
-                                print "Done!"
+                                #print "Done!"
                             else:
                                 # Keep Looking! (This is the next new island!)
+                                crit_sma = sma
+                                crit_eject_t = min(min_eject_t0, min_eject_t1)
                                 length_stable = 1; length_unstable = 0 
                                 found_stable = True; found_unstable = False
                         else:
@@ -104,33 +107,33 @@ for ith, inc in enumerate(inc_s):
             critical_sma_eject_time_tables[ith,j,k] = crit_eject_t
             critical_sma_eject_time_list[ith, j* len(mass_ratios) + k] = crit_eject_t
 
-            print
+            #print
             
 # Pickle Files!
 
-pickle_f = open(("%s_middle_critical_sma_inc_tables.p" % (dir_base)), "wb")
+pickle_f = open(("%s_middle_critical_sma_ecc_tables.p" % (dir_base)), "wb")
 pickle.dump(critical_sma_tables, pickle_f)
 pickle_f.close()
 
-pickle_f = open(("%s_middle_critical_sma_inc_list.p" % (dir_base)), "wb")
+pickle_f = open(("%s_middle_critical_sma_ecc_list.p" % (dir_base)), "wb")
 pickle.dump(critical_sma_list, pickle_f)
 pickle_f.close()
 
-pickle_f = open(("%s_middle_critical_sma_inc_eject_tables.p" % (dir_base)), "wb")
+pickle_f = open(("%s_middle_critical_sma_ecc_eject_tables.p" % (dir_base)), "wb")
 pickle.dump(critical_sma_eject_time_tables, pickle_f)
 pickle_f.close()
 
-pickle_f = open(("%s_middle_critical_sma_inc_eject_list.p" % (dir_base)), "wb")
+pickle_f = open(("%s_middle_critical_sma_ecc_eject_list.p" % (dir_base)), "wb")
 pickle.dump(critical_sma_eject_time_list, pickle_f)
 pickle_f.close()
             
 # Pretty Print Table and List
 
-tables_fn = "%s_middle_critical_sma_inc_tables.txt" % (dir_base)
-list_fn = "%s_middle_critical_sma_inc_list.txt" % (dir_base)
+tables_fn = "%s_middle_critical_sma_ecc_tables.txt" % (dir_base)
+list_fn = "%s_middle_critical_sma_ecc_list.txt" % (dir_base)
 
-eject_tables_fn = "%s_middle_critical_sma_inc_eject_tables.txt" % (dir_base)
-eject_list_fn = "%s_middle_critical_sma_inc_eject_list.txt" % (dir_base)
+eject_tables_fn = "%s_middle_critical_sma_ecc_eject_tables.txt" % (dir_base)
+eject_list_fn = "%s_middle_critical_sma_ecc_eject_list.txt" % (dir_base)
 
 tables_f = open(tables_fn, "w")
 list_f = open(list_fn, "w")
@@ -139,47 +142,32 @@ eject_tables_f = open(eject_tables_fn, "w")
 eject_list_f = open(eject_list_fn, "w")
 
 
-############### SORT BY INCLINATION #################
+############### SORT BY ECCENTRICITY #################
 
 # (1) Tables
 
 width = 8
 dash = '-' * width
 
-for ith, inc in enumerate(inc_s):
-    row_zero = ("Inc%02d" % inc).center(width) + '|'
+for j, ecc in enumerate(ecc_s):
+    row_zero = ("Ecc=%0.2f" % ecc).center(width) + '|'
     dash_row = dash + '-'
     for u in mass_ratios:
         row_zero += (str(u)).center(width)
         dash_row += dash
         
     rows = []
-    rows_eject = []
-    for j, ecc in enumerate(ecc_s):
-        row = (str(ecc)).center(width) + '|'
-        row_eject = (str(ecc)).center(width) + '|'
+    for ith, inc in enumerate(inc_s):
+        row = (str(inc)).center(width) + '|'
         for k, u in enumerate(mass_ratios):
             row += (str(critical_sma_tables[ith,j,k])).center(width)
-            row_eject += (str(critical_sma_eject_time_tables[ith,j,k])).center(width)
         rows.append(row)
-        rows_eject.append(row_eject)
-
-    # File 1: the critical 'a'
         
     tables_f.write(row_zero + "\n")
     tables_f.write(dash_row + "\n")
     for r_str in rows:
        tables_f.write(r_str + "\n")
     tables_f.write("\n")
-
-    # File 2: the ejection time at that 'a'
-
-    eject_tables_f.write(row_zero + "\n")
-    eject_tables_f.write(dash_row + "\n")
-    for r_str in rows_eject:
-       eject_tables_f.write(r_str + "\n")
-    eject_tables_f.write("\n")
-
     
 # (2) List
 
@@ -190,20 +178,13 @@ for inc in inc_s:
     dash_row += dash
     
 rows = []
-rows_eject = []
 for k, u in enumerate(mass_ratios):
-  for j, ecc in enumerate(ecc_s):
-    row = ("(u=%.1f, e=%.1f)" % (u, ecc)).center(2*width) + '|'
-    row_eject = ("(u=%.1f, e=%.1f)" % (u, ecc)).center(2*width) + '|'
-    for ith, inc in enumerate(inc_s):
+  for ith, inc in enumerate(inc_s):
+    row = ("(u=%.1f, i=%02d)" % (u, inc)).center(2*width) + '|'
+    for j, ecc in enumerate(ecc_s):
         row += str(critical_sma_list[ith, j*len(mass_ratios) + k]).center(width)
-        row_eject += str(critical_sma_eject_time_list[ith, j*len(mass_ratios) + k]).center(width)
     rows.append(row)
-    rows_eject.append(row_eject)
   rows.append(dash_row)
-  rows_eject.append(dash_row)
-
-# File 1: the critical 'a'
         
 list_f.write(row_zero + "\n")
 list_f.write(dash_row + "\n")
@@ -211,19 +192,5 @@ for r_str in rows:
    list_f.write(r_str + "\n")
 list_f.write("\n")
 
-# File 2: the ejection time at that 'a'
-
-eject_list_f.write(row_zero + "\n")
-eject_list_f.write(dash_row + "\n")
-for r_str in rows_eject:
-   eject_list_f.write(r_str + "\n")
-eject_list_f.write("\n")
-
-# Close all four files
-
 tables_f.close()
-eject_tables_f.close()
 list_f.close()
-eject_list_f.close()
-
-
