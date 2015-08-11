@@ -1,6 +1,8 @@
 """
 gathers the critical sma (a_st) over a given range of ((u, e), i)
 and makes two tables representing the data
+
+Definition: Refined LCO (better than HW99)
 """
 
 import numpy as np

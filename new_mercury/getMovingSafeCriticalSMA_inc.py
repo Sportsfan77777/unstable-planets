@@ -1,6 +1,8 @@
 """
 gathers the critical sma (a_st) over a given range of ((u, e), i)
 and makes two tables representing the data
+
+Definiton: UCO, with median 'a' instead of initial 'a'
 """
 
 import numpy as np

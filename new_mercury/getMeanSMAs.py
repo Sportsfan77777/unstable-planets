@@ -72,88 +72,23 @@ pickle_f.close()
 ID_manager = ID_Manager()
 ID_manager.read()
 
-""" Collect *.aei files (output data from e.exe = mercury output parser) """
+""" Collect all ID names using .npy files"""
 
-aei_path = "ID*.aei"
-aei_files = sorted(glob.glob(aei_path))
+npy_path = "ID*.npy"
+npy_files = sorted(glob.glob(npy_path))
 
-if len(aei_files) == 0:
+if len(npy_files) == 0:
     # ./e.exe has not been run yet, so run it
-    element_output = "./e.exe"
-    subprocess.call(element_output)
+    command = ['python', 'readAvatarOutput.py']
+    subprocess.call(command)
 
     # Re-try globglob
-    aei_files = sorted(glob.glob(aei_path))
+    npy_files = sorted(glob.glob(npy_path))
 
-""" For each .aei file, get all the xyz,uvw and convert to a """
-
-############# BARYCENTRIC FORMAT!!!!!!!! (because Jacobi thing doesn't work...) ##########
-
-# store each a_over_time in dictionary corresponding to IDs (or orbital parameters??????)
 id_names = []
-a_dict = {}
-t_dict = {}
-for aei_fn in aei_files:
-    id_name = aei_fn[:aei_fn.rfind(".")] # for 'ID_0000.aei', return 'ID_0000'
+for npy_fn in npy_files:
+    id_name = npy_fn[:npy_fn.rfind("_")]
     id_names.append(id_name)
-
-    save_fn_a = "%s_a.npy" % id_name
-    save_fn_t = "%s_t.npy" % id_name
-
-    if os.path.exists(save_fn_a) and os.path.exists(save_fn_t):
-        # This has already been done!
-        a_over_time = np.load(save_fn_a)
-        time_array = np.load(save_fn_t)
-    else:
-        a_over_time = []
-        time_array = []
-
-        f = open(aei_fn)
-        lines = f.readlines()
-
-        for line in lines:
-            split_line = line.split()
-
-            if len(split_line) > 2:
-                t = split_line[0]
-
-                x = split_line[1]
-                y = split_line[2]
-                z = split_line[3]
-
-                u = split_line[4]
-                v = split_line[5]
-                w = split_line[6]
-                
-
-                if (isFloat(x) and isFloat(y) and isFloat(z) and isFloat(u) and isFloat(v) and isFloat(w)):
-                   position = Position(float(x), float(y), float(z))
-                   velocity = Velocity(float(u), float(v), float(w))
-
-                   a = calculate_a(position, velocity, mu)
-
-                   a_over_time.append(a)
-                   time_array.append(t)
-
-        if len(a_over_time) >= 5:
-           time_array = time_array[:-1]
-           a_over_time = a_over_time[:-1] # get rid of last entry IFF eject after 5000 years
-
-    a_dict[id_name] = a_over_time
-    t_dict[id_name] = time_array
-
-        # Save a_over_time and time_array
-    
-
-print "ID_names:", id_names
-        
-""" 
-Format: ID_#%04d collided with the central body at #c.#d years
-Format: ID_#%04d ejected at #c.#d years
-
-Read ID_# and look up corresponding mean_anomaly and semimajor_axis, #c as ejection time in 1000s of years
-"""
-
 
 """ M """
 mean_anomalies = np.ones(N) * 2 * np.pi / N
@@ -181,24 +116,10 @@ sm_axis_table = np.zeros((num_a, N)) + 99.9
 
 # (1) Calculate Mean SMAs, (2) Plot Them, and (3) Parse Them Into Table
 
-for ID_str in id_names:
-    ID_name = id_dict[ID_str]
-    id_split = ID_name.split('_')
+for id_name in id_names:
+    save_fn = "%s_elements.npy" % id_name
 
-    A_str = id_split[0]
-    M_str = id_split[1]
-
-    Ai = sm_array.index(float(A_str[1:]))
-    Mi = m_deg_array.index(int(M_str[1:]))
-
-    this_a_over_time = a_dict[ID_str] # retrieve
-    this_time = t_dict[ID_str] # retrieve
-
-    #print ID_str, ID_name
-    #print this_a_over_time
-    #print this_time
-
-    if len(this_a_over_time) > 0:
+    if os.path.exists(save_fn):
         plot_fn = "%s_sm-axis_evolution.png" % ID_str # Note: ID_name = e.g. A2.1
         plot_title = "%s, Planet: %s" % (ID_str, ID_name)
 
@@ -211,32 +132,18 @@ for ID_str in id_names:
 
         plot.savefig(plot_fn)
 
-        initial_sma = 
+        # Filter bad values too far from initial_sma
+        initial_sma = float(A_str[1:])
 
-        median_sma = np.median(this_a_over_time)
-        three_sigma = 3.0 * np.std(this_a_over_time)
+        # If it's out of this range, something is horribly wrong... (hopefully, it is ejecting)
+        min_sma = initial_sma - 0.5
+        max_sma = initial_sma + 0.5
 
-        outliers = True
-        tmp_a_over_time = this_a_over_time[:] 
-        while outliers:
-            #print median_sma, three_sigma
-            #print
+        filtered_a_over_time = this_a_over_time[this_a_over_time > min_sma]
+        filtered_a_over_time = filtered_a_over_time[this_a_over_time < max_sma]
 
-            prev_tmp = tmp_a_over_time[:]
-            tmp_a_over_time = []
-            for a in prev_tmp:
-                if abs(a - median_sma) > three_sigma:
-                    pass
-                else:
-                    tmp_a_over_time.append(a)
-
-            median_sma = np.median(tmp_a_over_time)
-            three_sigma = 3.0 * np.std(tmp_a_over_time)
-
-            if len(tmp_a_over_time) == len(prev_tmp):
-                outliers = False
-
-        sm_axis_table[Ai][Mi] = median_sma   ### <<<<<----- Currently working on this
+        median_sma = np.median(filtered_a_over_time)
+        sm_axis_table[Ai][Mi] = median_sma   ### <<<<<----- Currently working on this (but it is better now)
 
 # Simple Print  
 #print ejectionTable, '\n'
