@@ -127,6 +127,14 @@ for line in data:
     
     # parse into M and a (directly or indirectly?)
 
+# Create Mask for Ejections (Eject = 1, Stable = 0)
+ejectionMask = np.copy(ejectionTable)
+ejectionMask[ejectionMask != STABLE_VALUE] = 1
+ejectionMask[ejectionMask == STABLE_VALUE] = 0
+
+
+################### PRINT + SAVE ######################
+
 # Simple Print  
 #print ejectionTable, '\n'
 
@@ -220,5 +228,11 @@ pickle_f.close()
 
 # (ii) as array of dictionaries
 
+# Not Implemented Yet
+
+# Write Ejection Mask
+pickle_f = open("mask_ejections.p", "wb")
+pickle.dump(ejectionMask, pickle_f)
+pickle_f.close()
 
 
