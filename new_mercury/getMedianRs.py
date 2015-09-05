@@ -20,7 +20,7 @@ from mercury import G as BigG
 from getEjectionData import STABLE_VALUE
 
 """
-This program makes a table of the median semi_major_axes for each planet.
+This program makes a table of the median radii (distance from barycenter) for each planet.
 There are 3 tables produced.
 One contains all planets
 
@@ -84,12 +84,12 @@ ID_manager.read()
 
 """ Collect all ID names using .npy files"""
 
-npy_path = "ID*_elements.npy"
+npy_path = "ID*_cart.npy"
 npy_files = sorted(glob.glob(npy_path))
 
 if len(npy_files) == 0:
     # ./e.exe has not been run yet, so run it
-    command = ['python', 'saveAvatarOutput.py']
+    command = ['python', 'saveCartOutput.py']
     subprocess.call(command)
 
     # Re-try globglob
