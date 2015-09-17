@@ -74,6 +74,9 @@ labelsize = 14
 rc['xtick.labelsize'] = labelsize
 rc['ytick.labelsize'] = labelsize
 
+min_y = 1.8
+max_y = 4.5
+
 ### SUB PLOTS ###
 f, (ax1, ax2, ax3) = plot.subplots(1, 3, sharey=True)
 f.subplots_adjust(wspace = 0)
@@ -83,13 +86,20 @@ f.set_size_inches(14, 4, forward = True)
 #ax1 = f.add_subplot(gs[0])
 #ax2 = f.add_subplot(gs[1], sharey=ax1)
 #ax3 = f.add_subplot(gs[2], sharey=ax1)
+ax4 = ax1.twinx()
+ax5 = ax2.twinx()
+ax6 = ax3.twinx()
 
 # Set up each figure
-def plot_ax(ax, mu):
+def plot_ax(ax, ax_b, mu):
+    """
+    Note: Plots are on twin axes (ax_b) because that is where the grid lines are
+    """
+
     # Annotate
     ax.set_xlim(-0.05, 0.75)
     ax.xaxis.set_minor_locator(AutoMinorLocator())
-    ax.set_ylim(1.8, 4.5)
+    ax.set_ylim(min_y, max_y)
     ax.yaxis.set_minor_locator(AutoMinorLocator())
 
     ax2.set_xlabel("Eccentricity", fontsize = fontsize)
@@ -101,10 +111,10 @@ def plot_ax(ax, mu):
     label_st = ""
     label_crit_dots = ""
     label_st_dots = ""
-    if ax == ax1:
+    if ax_b == ax4:
         label_crit_dots = "$a_{crit}$"
         label_st_dots = "$a_{st}$"
-    elif ax == ax3:
+    elif ax_b == ax6:
         label_hw = "$a_{crit,HW99}$"
         label_crit = "$a_{crit}$"
         label_st = "$a_{st}$"
@@ -118,9 +128,9 @@ def plot_ax(ax, mu):
     # Fitting Functions
     zorder_fit = 1
     linewidth = 4
-    ax.plot(x_fit, y_st_fit, linewidth = linewidth, color = "orange", zorder = zorder_fit, label = label_st)
-    ax.plot(x_fit, y_crit_fit, linewidth = linewidth, color = "#64C5ED", zorder = zorder_fit, label = label_crit)
-    ax.plot(x_fit, y_crit_hw, linewidth = linewidth - 1, color = "black", linestyle = "-.", dashes = [12, 6, 4, 6], zorder = zorder_fit, label = label_hw)
+    ax_b.plot(x_fit, y_st_fit, linewidth = linewidth, color = "orange", zorder = zorder_fit, label = label_st)
+    ax_b.plot(x_fit, y_crit_fit, linewidth = linewidth, color = "#64C5ED", zorder = zorder_fit, label = label_crit)
+    ax_b.plot(x_fit, y_crit_hw, linewidth = linewidth - 1, color = "black", linestyle = "-.", dashes = [12, 6, 4, 6], zorder = zorder_fit, label = label_hw)
     
     ### Plot Real Data Points ###
     x_real = np.array([0.05 * x for x in range(15)])
@@ -130,17 +140,46 @@ def plot_ax(ax, mu):
     # Real Data
     zorder_real = 10
     size_real = 68
-    ax.scatter(x_real, y_st_real, color = "red", marker = "^", s = size_real, zorder = zorder_real, label = label_st_dots)
-    ax.scatter(x_real, y_crit_real, color = "blue", marker = "v", s = size_real, zorder = zorder_real, label = label_crit_dots)
+    ax_b.scatter(x_real, y_st_real, color = "red", marker = "^", s = size_real, zorder = zorder_real, label = label_st_dots)
+    ax_b.scatter(x_real, y_crit_real, color = "blue", marker = "v", s = size_real, zorder = zorder_real, label = label_crit_dots)
 
     # Legend
-    ax1.legend(bbox_to_anchor = (0.35, 1))
-    ax3.legend(bbox_to_anchor = (1, 0.40))
+    l = ax4.legend(bbox_to_anchor = (0.35, 1))
+    #l.get_frame().set_alpha(1.0)
+    #l.set_zorder(20)
+    ax6.legend(bbox_to_anchor = (1, 0.40))
 
 # Select 3 different values of mu
-plot_ax(ax1, 0.1)
-plot_ax(ax2, 0.3)
-plot_ax(ax3, 0.5)
+plot_ax(ax1, ax4, 0.1)
+plot_ax(ax2, ax5, 0.3)
+plot_ax(ax3, ax6, 0.5)
+
+# Set up Orbital Period on y-axis of ax3
+min_r = int(np.ceil((min_y - 0.1)**1.5))
+max_r = int(np.ceil((max_y + 0.1)**1.5))
+new_tick_locations = [q**(0.66667) for q in np.array(range(min_r, max_r))]
+def resonant_axis_labels(a_s):
+    """ set up axis label numbers """
+    r_s = [a**1.5 for a in a_s]
+    r_labels = ["%d" % int(round(r,0)) for r in r_s]
+    return r_labels
+
+ax4.set_ylim(ax1.get_ylim())
+ax4.set_yticks(new_tick_locations)
+ax4.set_yticklabels(resonant_axis_labels(new_tick_locations), visible = False)
+ax4.grid(b = True, which = "major", color = "black", linestyle = "--")
+
+ax5.set_ylim(ax2.get_ylim())
+ax5.set_yticks(new_tick_locations)
+ax5.set_yticklabels(resonant_axis_labels(new_tick_locations), visible = False)
+ax5.grid(b = True, which = "major", color = "black", linestyle = "--")
+
+ax6.set_axisbelow(True)
+ax6.set_ylim(ax3.get_ylim())
+ax6.set_yticks(new_tick_locations)
+ax6.set_yticklabels(resonant_axis_labels(new_tick_locations))
+ax6.set_ylabel("Orbital Period [$T_b$]   ", fontsize = fontsize, rotation = 270)
+ax6.grid(b = True, which = "major", color = "black", linestyle = "--", zorder = 0)
 
 # Save figure
 save_fn = "fit_plots/fit_comparison_inc%02d.%s"

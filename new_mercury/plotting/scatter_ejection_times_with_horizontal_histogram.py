@@ -84,12 +84,28 @@ ax1.set_ylim(min_y, max_y)
 ax1.yaxis.set_ticks(np.arange(0, 401, 25))
 
 ax1.set_xlabel("$a_{st}$ [$a_b$]", fontsize = fontsize)
-ax1.set_ylabel("Required Simulation Time [$10^3 T_b$]", fontsize = fontsize)
+ax1.set_ylabel("Required Integration Time [$10^3 T_b$]", fontsize = fontsize)
 #plot.title("Simulation Times Sufficient for Finding $a_{st}$")
+
+# Set up Orbital Period on y-axis of ax1
+ax3 = ax1.twiny()
+min_r = int(np.ceil((min_x - 0.1)**1.5))
+max_r = int(np.ceil((max_x - 0.1)**1.5))
+new_tick_locations = [q**(0.66667) for q in np.array(range(min_r, max_r))]
+def resonant_axis_labels(a_s):
+    """ set up axis label numbers """
+    r_s = [a**1.5 for a in a_s]
+    r_labels = ["%d" % int(round(r,0)) for r in r_s]
+    return r_labels
+
+ax3.set_xlim(ax1.get_xlim())
+ax3.set_xticks(new_tick_locations)
+ax3.set_xticklabels(resonant_axis_labels(new_tick_locations))
+ax3.set_xlabel("Orbital Period [$T_b$]", fontsize = fontsize)
 
 ##### ADD HISTOGRAM #####
 #plot.title("Distribution of Sufficient Simulation Times")
-ax2.set_xlabel("Fraction of Simulations", fontsize = fontsize)
+ax2.set_xlabel("Fraction of Integrations", fontsize = fontsize)
 #ax2.set_ylabel("Required Simulation Time [$10^3 T_b$]", fontsize = fontsize)
 
 ax2.set_xlim(0.00, 1.02)
@@ -100,8 +116,8 @@ ax2.plot([-1, 2], [200, 200], color = subline_color, linewidth = width, linestyl
 ax2.plot([-1, 2], [300, 300], color = line_color, linewidth = width)
 ax2.hist(y, bins = range(0, 401, 5), normed = True, cumulative = True, histtype = "bar", color = color, orientation = "horizontal")
 
-plot.savefig("combinedNescessity.png")
-plot.savefig("combinedNescessity.pdf", format = 'pdf', dpi = 1000)
+plot.savefig("combinedNecessity.png")
+plot.savefig("combinedNecessity.pdf", format = 'pdf', dpi = 1000)
 plot.show()
 
 ###### Quantities ######

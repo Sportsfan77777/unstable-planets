@@ -9,22 +9,22 @@ import pickle
 import math
 import numpy as np
 
-from make_plots_ecc import line_graph
+from make_plots_middle_inc import line_graph
 
 dir_base = "sim"
 if len(sys.argv) > 1:
     dir_base = sys.argv[0]
 
-max_mass_i = 11
-num_ecc = 5
+max_mass_i = 6
+num_ecc = 15
 
-mass_ratios = [0.05 * x for x in range(2, max_mass_i)]
+mass_ratios = [0.1 * x for x in range(1, max_mass_i)]
 ecc_s = [0.05 * x for x in range(num_ecc)]
-inc_s = [10.0 * x for x in range(1,8)]
+inc_s = [10.0 * x for x in range(10)]
 Ms = [0, 180]
 
-tables_fn = "%s_safe_critical_sma_inc_tables.p" % dir_base
-list_fn = "%s_safe_critical_sma_inc_list.p" % dir_base
+tables_fn = "%s_middle_critical_sma_inc_tables.p" % dir_base
+list_fn = "%s_middle_critical_sma_inc_list.p" % dir_base
 
 tables_f = open(tables_fn, "rb")
 critical_sma_tables = pickle.load(tables_f)
@@ -72,7 +72,10 @@ for i in range(count):
 
 ####### MAKE A CONTOUR PLOT AND 3-D PLOT ########
 
-for j, ecc in enumerate(ecc_s):
-    line_graph(critical_sma_tables[:,j,:], ecc)
+for ith, inc in enumerate(inc_s):
+    line_graph(critical_sma_tables[ith,:,:], inc, ecc_s = ecc_s)
+
+#for j, ecc in enumerate(ecc_s):
+#    line_graph(critical_sma_tables[:,j,:], ecc, inc_s = inc_s)
 
 
