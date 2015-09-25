@@ -156,8 +156,8 @@ y_fine = np.array([1000*i for i in ejectionTable_fine])
 #colors = np.linspace(0,1,len(x)) # To color by initial sm-axis to mark incorrect median sm-axis
 
 # Set Up Plot
-fontsize = 16
-labelsize = 14
+fontsize = 17
+labelsize = 15
 rc['xtick.labelsize'] = labelsize
 rc['ytick.labelsize'] = labelsize
 
@@ -166,7 +166,7 @@ ax1 = fig.add_subplot(111)
 ax2 = ax1.twiny()
 
 # Ax1 is the Main Plot
-alpha_val = 0.1
+alpha_val = 0.17
 # Unstable Below
 ax1.scatter(np.ma.masked_array(x, mask), np.ma.masked_array(y, mask), color = 'red', edgecolor = "black", zorder = 10)
 ax1.scatter(np.ma.masked_array(x_fine, mask_fine), np.ma.masked_array(y_fine, mask_fine), color = 'red', edgecolor = "black", alpha = alpha_val, zorder = 2)
@@ -174,9 +174,9 @@ ax1.scatter(np.ma.masked_array(x_fine, mask_fine), np.ma.masked_array(y_fine, ma
 ax1.scatter(np.ma.masked_array(x, reverse_mask), np.ma.masked_array(y, reverse_mask), color = 'blue', edgecolor = "black", zorder = 10)
 ax1.scatter(np.ma.masked_array(x_fine, reverse_mask_fine), np.ma.masked_array(y_fine, reverse_mask_fine), color = 'blue', edgecolor = "black", alpha = alpha_val, zorder = 2)
 
-ax1.set_xlabel("Median Semimajor Axis $a$ [$a_b$]", fontsize = fontsize)
-ax1.set_ylabel("Ejection Time [$T_b$]", fontsize = fontsize)
-plot.title("System Parameters: ( $\mu$ = $%.02f$, $e$ = $%.02f$, $i$ = $%2d^{\circ}$)" % (u_bin, e_bin, i_bin), y = 1.11, fontsize = fontsize + 1)
+ax1.set_xlabel(r"Median Semimajor Axis [$a_{\rm b}$]", fontsize = fontsize)
+ax1.set_ylabel(r"Ejection Time [$T_{\rm b}$]", fontsize = fontsize)
+plot.title(" $\mu$ = $%.02f$, $e$ = $%.02f$, $i$ = $%2d^{\circ}$" % (u_bin, e_bin, i_bin), y = 1.13, bbox=dict(facecolor = 'none', edgecolor = 'black', linewidth = 1.5, pad=7.0), fontsize = fontsize + 2)
 
 ax1.set_xlim(o.min_sma - 0.1, o.max_sma + 0.1)
 ax2.set_ylim(10, 10**(np.ceil(np.log(SIM_TIME)/np.log(10))))
@@ -195,7 +195,7 @@ def resonant_axis_labels(a_s):
 ax2.set_xlim(ax1.get_xlim())
 ax2.set_xticks(new_tick_locations)
 ax2.set_xticklabels(resonant_axis_labels(new_tick_locations))
-ax2.set_xlabel("Orbital Period $T$ [$T_b$]", fontsize = fontsize)
+ax2.set_xlabel(r"Orbital Period [$T_{\rm b}$]", fontsize = fontsize, labelpad = 7)
 
 ## Annotate if any argument is supplied
 if (len(sys.argv) > 1):
@@ -210,9 +210,10 @@ if (len(sys.argv) > 1):
         else:
             x_crit = crit_sma(u_bin, e_bin, i_bin, crit_type = "hw99")
         # Arg 2
-        T_st = sys.argv[2]
-        if isFloat(T_st):
-            x_st = (float(T_st))**(2.0/3) # convert from T to a
+        x_st = sys.argv[2]
+        if isFloat(x_st):
+            x_st = float(x_st)
+            #x_st = (float(T_st))**(2.0/3) # convert from T to a
         else:
             x_st = crit_sma(u_bin, e_bin, i_bin)
 
@@ -220,7 +221,7 @@ if (len(sys.argv) > 1):
         x_crit = crit_sma(u_bin, e_bin, i_bin, crit_type = "hw99")
         x_st = crit_sma(u_bin, e_bin, i_bin)
     print "Lower Critical Sm-Axis:",  x_crit
-    print "Upper Critical Sm-Axis:",  x_st
+    print "Outer Critical Sm-Axis:",  x_st
 
     # Set 'Stable' Text Height
     annotate_y = SIM_TIME / 3
@@ -230,7 +231,7 @@ if (len(sys.argv) > 1):
     font = font0.copy()
     font.set_weight("bold")
     font.set_family("Arial Narrow")
-    ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x_st + 0.1, annotate_y),
+    ax1.annotate("    ALL  \nSTABLE", xy = (o.max_sma + 0.075, annotate_y), xytext = (x_st + 0.35, annotate_y),
                  arrowprops = dict(facecolor = "green", edgecolor = "green",
                                    arrowstyle = "simple, tail_width = 0.7, head_width = 1.6"),
                  verticalalignment = "center",
@@ -244,13 +245,13 @@ if (len(sys.argv) > 1):
     ax1.scatter(np.linspace(x_st_line, x_st_line, num_points), np.logspace(1, np.log10(2.4 * SIM_TIME), num_points), color = color_st, marker = 'o', s = 6, zorder = 5)
 
     # Set 'A_ST' Text Height
-    annotate_y_top = 1000
-    annotate_y_bottom = 250
+    annotate_y_top = 3000
+    annotate_y_bottom = 1500
 
     # Set 'A_ST' Text Font
     font2 = font0.copy()
     font2.set_weight("bold")
-    ax1.annotate("$a_{st}$", xy = (x_st + 0.06, annotate_y_top), xytext = (x_st + 0.25, annotate_y_bottom),
+    ax1.annotate(r"$a_{\rm crit} = a_{\rm st}$", xy = (x_st + 0.04, annotate_y_top), xytext = (x_st + 0.4, annotate_y_bottom),
                  arrowprops = dict(facecolor = color_st, edgecolor = color_st,
                                    arrowstyle = "simple, tail_width = 0.1, head_width = 0.7"),
                  verticalalignment = "center", 
@@ -269,11 +270,13 @@ if (len(sys.argv) > 1):
     # Set 'A_CRIT_HW' Text Font
     font3 = font0.copy()
     font3.set_weight("bold")
+    """
     ax1.annotate("$a_{crit}$", xy = (x_crit_line + 0.03, annotate_y_top), xytext = (x_crit + 0.42, annotate_y_bottom),
                  arrowprops = dict(facecolor = color_crit, edgecolor = color_crit,
                                    arrowstyle = "simple, tail_width = 0.08, head_width = 0.6"),
                  verticalalignment = "center", 
                  fontproperties = font3, size = 20, color = color_crit)
+    """
 
     #### A_CRIT_HW LINE LABEL ####
     color_hw = "black"
@@ -288,7 +291,7 @@ if (len(sys.argv) > 1):
     # Set 'A_CRIT_HW' Text Font
     font3 = font0.copy()
     font3.set_weight("bold")
-    ax1.annotate("$a_{crit,HW99}$", xy = (x_crit_hw + 0.03, annotate_y_top), xytext = (x_crit_hw + 0.50, annotate_y_bottom),
+    ax1.annotate(r"$a_{\rm crit,HW99}$", xy = (x_crit_hw + 0.014, annotate_y_top), xytext = (x_crit_hw + 0.50, annotate_y_bottom), zorder = 6,
                  arrowprops = dict(facecolor = color_hw, edgecolor = color_hw,
                                    arrowstyle = "simple, tail_width = 0.08, head_width = 0.6"),
                  verticalalignment = "center", 

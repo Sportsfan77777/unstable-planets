@@ -43,8 +43,8 @@ x = crit_sm_axis_list[:]
 y = ejectionTime_list[:]
 
 # Set Up Plots
-fontsize = 15
-labelsize = 14
+fontsize = 17
+labelsize = 15
 rc['xtick.labelsize'] = labelsize
 rc['ytick.labelsize'] = labelsize
 
@@ -83,8 +83,8 @@ ax1.set_xlim(min_x, max_x)
 ax1.set_ylim(min_y, max_y)
 ax1.yaxis.set_ticks(np.arange(0, 401, 25))
 
-ax1.set_xlabel("$a_{st}$ [$a_b$]", fontsize = fontsize)
-ax1.set_ylabel("Required Integration Time [$10^3 T_b$]", fontsize = fontsize)
+ax1.set_xlabel(r"$a_{\rm st}$ [$a_{\rm b}$]", fontsize = fontsize)
+ax1.set_ylabel(r"Required Integration Time [$10^3 T_{\rm b}$]", fontsize = fontsize)
 #plot.title("Simulation Times Sufficient for Finding $a_{st}$")
 
 # Set up Orbital Period on y-axis of ax1
@@ -101,7 +101,7 @@ def resonant_axis_labels(a_s):
 ax3.set_xlim(ax1.get_xlim())
 ax3.set_xticks(new_tick_locations)
 ax3.set_xticklabels(resonant_axis_labels(new_tick_locations))
-ax3.set_xlabel("Orbital Period [$T_b$]", fontsize = fontsize)
+ax3.set_xlabel(r"Orbital Period [$T_{\rm b}$]", fontsize = fontsize, labelpad = 7)
 
 ##### ADD HISTOGRAM #####
 #plot.title("Distribution of Sufficient Simulation Times")
