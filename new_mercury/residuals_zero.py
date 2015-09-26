@@ -1,5 +1,5 @@
 """
-Calculate the residuals between each fit and the actual values
+Calculate the residuals between the co-planar fit and the actual values at any inclination
 
 Parameter: inclination
 """
@@ -16,8 +16,8 @@ inc = int(sys.argv[1])
 
 
 ### Fit Functions ###
-info_fit_crit = pickle.load(open("fit_crit_inc%02d.p" % inc, "rb"))
-info_fit_st = pickle.load(open("fit_st_inc%02d.p" % inc, "rb"))
+info_fit_crit = pickle.load(open("fit_crit_inc00.p", "rb"))
+info_fit_st = pickle.load(open("fit_st_inc00.p", "rb"))
 
 popt_crit = info_fit_crit["popt"]
 popt_st = info_fit_st["popt"]
@@ -63,9 +63,6 @@ data_points = len(ecc_s) * len(mass_ratios)
 residuals_crit = np.zeros(data_points)
 residuals_st = np.zeros(data_points)
 
-differences = np.zeros(data_points)
-
-
 count = 0
 for mass_ratio in mass_ratios:
 	for ecc in ecc_s:
@@ -73,24 +70,18 @@ for mass_ratio in mass_ratios:
 		real_crit = crit_sma(mass_ratio, ecc, inc, crit_type = "")
 		real_st = crit_sma(mass_ratio, ecc, inc, crit_type = "safe")
 
-		if inc <= 45:
-			# Fits
-			fit_crit_value = fit_crit(mass_ratio, ecc)
-			fit_st_value = fit_st(mass_ratio, ecc)
+		# Fits
+		fit_crit_value = fit_crit(mass_ratio, ecc)
+		fit_st_value = fit_st(mass_ratio, ecc)
 
-			residuals_crit[count] = abs((fit_crit_value - real_crit) / real_crit)
-			residuals_st[count] = abs((fit_st_value - real_st) / real_st)
-
-		differences[count] = real_st / real_crit
+		residuals_crit[count] = abs((fit_crit_value - real_crit) / real_crit)
+		residuals_st[count] = abs((fit_st_value - real_st) / real_st)
 
 		count += 1
 
 # Sort
-if inc <= 45:
-	residuals_crit = np.sort(residuals_crit)
-	residuals_st = np.sort(residuals_st)
-
-differences = np.sort(differences)
+residuals_crit = np.sort(residuals_crit)
+residuals_st = np.sort(residuals_st)
 
 # Analysis
 def analyze(array):
@@ -101,17 +92,12 @@ def analyze(array):
 print
 print " *** Inclination %d ***" % (inc)
 
-if inc <= 45:
-	print "a_crit:"
-	analyze(residuals_crit)
-	print
+print "a_crit:"
+analyze(residuals_crit)
+print
 
-	print "a_st"
-	analyze(residuals_st)
-	print
-
-print "Percent Difference"
-analyze(differences)
+print "a_st"
+analyze(residuals_st)
 print
 
 
